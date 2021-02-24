@@ -1,0 +1,7 @@
+c_pb cells=6 curr=2.0 cuta=0.4 cap=7.2 time=200
+wait 5m
+d_cc curr=2A cutv=11.0V
+loop 10 capi
+c_pb cells=6 curr=2.0 cuta=0.4 cap=7.2 time=200
+wait 5
+c_cv voltage=13.65 curr=0.5

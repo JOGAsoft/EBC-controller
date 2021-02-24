@@ -1,0 +1,120 @@
+object frmSettings: TfrmSettings
+  Left = 483
+  Height = 480
+  Top = 167
+  Width = 624
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsDialog
+  Caption = 'Settings'
+  ClientHeight = 480
+  ClientWidth = 624
+  OnCreate = FormCreate
+  OnShow = FormShow
+  Position = poDefault
+  LCLVersion = '2.0.0.4'
+  object rgStart: TRadioGroup
+    Left = 8
+    Height = 111
+    Top = 4
+    Width = 608
+    AutoFill = True
+    Caption = 'Startup behavior'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 90
+    ClientWidth = 604
+    Items.Strings = (
+      'Load last settings'
+      'Use default settings'
+      'Use selection 2'
+      'Use selection 3'
+    )
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 541
+    Height = 25
+    Top = 448
+    Width = 75
+    Caption = '&Ok'
+    ModalResult = 1
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object cgSettings: TCheckGroup
+    Left = 8
+    Height = 240
+    Top = 205
+    Width = 608
+    AutoFill = True
+    Caption = 'Misc settings'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.TopBottomSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 219
+    ClientWidth = 604
+    Items.Strings = (
+      'Autoload program file'
+      'Remember save directory'
+      'Remember CSV file for automatic logging'
+      'Remember step file directory'
+      'Force monitor mode after cycle end'
+      'Capture settings from instrument during connect'
+    )
+    OnClick = cgSettingsClick
+    OnItemClick = cgSettingsItemClick
+    TabOrder = 2
+    Data = {
+      06000000020202020202
+    }
+    object edtProgFile: TFileNameEdit
+      Left = 179
+      Height = 28
+      Top = 9
+      Width = 420
+      Filter = 'Step files|*.stp|All files|*.*'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      NumGlyphs = 1
+      Anchors = []
+      AutoSize = False
+      MaxLength = 0
+      TabOrder = 0
+    end
+  end
+  object grpParam: TGroupBox
+    Left = 8
+    Height = 90
+    Top = 114
+    Width = 608
+    Caption = 'Parameters'
+    ClientHeight = 69
+    ClientWidth = 604
+    TabOrder = 3
+    object edtIntTime: TJLabeledIntegerEdit
+      Left = 13
+      Height = 29
+      Top = 30
+      Width = 114
+      DisplayFormat = '0'
+      Value = 60
+      NegativeColor = clDefault
+      EditLabel.Height = 19
+      EditLabel.Width = 114
+      EditLabel.Caption = 'dVdA Int. time (s)'
+      EditLabel.ParentColor = False
+      TabOrder = 0
+    end
+  end
+end

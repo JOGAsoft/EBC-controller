@@ -1,0 +1,885 @@
+object frmMain: TfrmMain
+  Left = 478
+  Height = 520
+  Top = 244
+  Width = 1000
+  Caption = 'EBC controller'
+  ClientHeight = 520
+  ClientWidth = 1000
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  PopupMenu = mnPopup
+  Position = poDefault
+  LCLVersion = '2.0.0.4'
+  object gbConn: TGroupBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 94
+    Top = 426
+    Width = 262
+    Anchors = [akLeft, akBottom]
+    Caption = 'Connection'
+    ClientHeight = 73
+    ClientWidth = 258
+    Constraints.MaxHeight = 94
+    Constraints.MaxWidth = 280
+    TabOrder = 0
+    object edtDevice: TEdit
+      Left = 3
+      Height = 29
+      Top = 16
+      Width = 219
+      PopupMenu = mnSerial
+      TabOrder = 0
+      Text = '/dev/ttyUSB0'
+    end
+    object Label5: TLabel
+      Left = 3
+      Height = 19
+      Top = 0
+      Width = 45
+      Caption = 'Device'
+      ParentColor = False
+    end
+    object lblModel: TLabel
+      Left = 93
+      Height = 19
+      Top = 49
+      Width = 94
+      Caption = 'Not connected'
+      ParentColor = False
+    end
+    object chkAccept: TCheckBox
+      Left = 119
+      Height = 23
+      Top = -4
+      Width = 98
+      Caption = 'Ignore CRC'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
+    object btnConnect: TBitBtn
+      Left = 4
+      Height = 25
+      Top = 46
+      Width = 84
+      Caption = 'Connect'
+      ImageIndex = 1
+      ImageWidth = 1
+      OnClick = btnConnectClick
+      TabOrder = 2
+    end
+    object shpConn: TShape
+      Left = 231
+      Height = 20
+      Top = 20
+      Width = 20
+      Brush.Color = clDefault
+      Shape = stCircle
+      Visible = False
+    end
+  end
+  object gbSettings: TGroupBox
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 720
+    Height = 448
+    Top = 72
+    Width = 280
+    Anchors = [akRight, akBottom]
+    ClientHeight = 444
+    ClientWidth = 276
+    Constraints.MaxWidth = 280
+    Constraints.MinHeight = 448
+    PopupMenu = mnPopup
+    TabOrder = 1
+    object btnStart: TButton
+      Left = 8
+      Height = 25
+      Top = 392
+      Width = 75
+      Caption = 'Start'
+      Enabled = False
+      OnClick = btnStartClick
+      TabOrder = 0
+    end
+    object btnStop: TButton
+      Left = 82
+      Height = 25
+      Top = 392
+      Width = 75
+      Caption = 'Stop'
+      OnClick = btnStopClick
+      TabOrder = 1
+    end
+    object btnCont: TButton
+      Left = 8
+      Height = 25
+      Top = 416
+      Width = 75
+      Caption = 'Cont'
+      Enabled = False
+      OnClick = btnContClick
+      TabOrder = 2
+    end
+    object btnAdjust: TButton
+      Left = 82
+      Height = 25
+      Top = 416
+      Width = 75
+      Caption = 'Adjust'
+      Enabled = False
+      OnClick = btnAdjustClick
+      TabOrder = 3
+    end
+    object pcProgram: TPageControl
+      Left = 0
+      Height = 280
+      Top = 0
+      Width = 272
+      ActivePage = tsConsole
+      Constraints.MaxWidth = 280
+      TabIndex = 3
+      TabOrder = 4
+      object tsCharge: TTabSheet
+        Caption = 'Charge'
+        ClientHeight = 243
+        ClientWidth = 266
+        OnEnter = tsChargeEnter
+        object rgCharge: TRadioGroup
+          Left = 0
+          Height = 136
+          Top = 0
+          Width = 266
+          Align = alTop
+          AutoFill = True
+          ChildSizing.LeftRightSpacing = 6
+          ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+          ChildSizing.EnlargeVertical = crsHomogenousChildResize
+          ChildSizing.ShrinkHorizontal = crsScaleChilds
+          ChildSizing.ShrinkVertical = crsScaleChilds
+          ChildSizing.Layout = cclLeftToRightThenTopToBottom
+          ChildSizing.ControlsPerLine = 1
+          ClientHeight = 115
+          ClientWidth = 262
+          ItemIndex = 4
+          Items.Strings = (
+            'NiMH - Nickel-metal Hydride'
+            'NiCd - Nickel-cadmium'
+            'LiPo - Lithium Ion or Polymer'
+            'LiFe - Lithium Iron Phosphate'
+            'PbAc - Lead Acid'
+            'CCCV - CC and CV charging'
+          )
+          OnClick = rgChargeClick
+          TabOrder = 0
+        end
+        object lblMin: TLabel
+          Left = 216
+          Height = 19
+          Top = 216
+          Width = 48
+          Caption = 'minues'
+          ParentColor = False
+        end
+        object Label10: TLabel
+          Left = 126
+          Height = 19
+          Top = 216
+          Width = 32
+          Caption = 'after'
+          ParentColor = False
+        end
+        object edtCells: TJLabeledIntegerEdit
+          Left = 8
+          Height = 29
+          Top = 160
+          Width = 116
+          DisplayFormat = '0'
+          Value = 0
+          NegativeColor = clDefault
+          EditLabel.Height = 19
+          EditLabel.Width = 116
+          EditLabel.Caption = 'Cells'
+          EditLabel.ParentColor = False
+          TabOrder = 1
+          OnChange = edtCellsChange
+          OnClick = edtCellsClick
+          OnEditingDone = edtCellsEditingDone
+          OnExit = edtCellsExit
+          OnKeyDown = edtCellsKeyDown
+          OnKeyUp = edtCellsKeyUp
+        end
+        object edtCutA: TJLabeledFloatEdit
+          Left = 8
+          Height = 29
+          Top = 212
+          Width = 116
+          DisplayFormat = '#,0.00'
+          Decimals = 2
+          Value = 0
+          NegativeColor = clDefault
+          EditLabel.Height = 19
+          EditLabel.Width = 116
+          EditLabel.Caption = 'Cutoff current (A)'
+          EditLabel.ParentColor = False
+          TabOrder = 2
+        end
+        object edtCutM: TJLabeledIntegerEdit
+          Left = 160
+          Height = 29
+          Top = 212
+          Width = 56
+          DisplayFormat = '0'
+          Value = 0
+          NegativeColor = clDefault
+          EditLabel.Height = 19
+          EditLabel.Width = 56
+          EditLabel.Caption = ' '
+          EditLabel.ParentColor = False
+          TabOrder = 3
+        end
+        object edtChargeV: TJLabeledFloatEdit
+          Left = 144
+          Height = 29
+          Top = 160
+          Width = 114
+          DisplayFormat = '#,0.00'
+          Decimals = 2
+          Value = 0
+          NegativeColor = clDefault
+          EditLabel.Height = 19
+          EditLabel.Width = 114
+          EditLabel.Caption = 'Voltage'
+          EditLabel.ParentColor = False
+          Enabled = False
+          TabOrder = 4
+        end
+      end
+      object tsDischarge: TTabSheet
+        Caption = 'Discharge'
+        ClientHeight = 243
+        ClientWidth = 266
+        OnEnter = tsDischargeEnter
+        object rgDischarge: TRadioGroup
+          Left = 0
+          Height = 115
+          Top = 0
+          Width = 266
+          Align = alTop
+          AutoFill = True
+          ChildSizing.LeftRightSpacing = 6
+          ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+          ChildSizing.EnlargeVertical = crsHomogenousChildResize
+          ChildSizing.ShrinkHorizontal = crsScaleChilds
+          ChildSizing.ShrinkVertical = crsScaleChilds
+          ChildSizing.Layout = cclLeftToRightThenTopToBottom
+          ChildSizing.ControlsPerLine = 1
+          ClientHeight = 94
+          ClientWidth = 262
+          ItemIndex = 0
+          Items.Strings = (
+            'CC - Constant Current'
+            'CP - Constant Power'
+            'CR - Constant Resistance(SW)'
+          )
+          OnClick = rgDischargeClick
+          TabOrder = 0
+        end
+        object lblCutoffV1: TLabel
+          Left = 128
+          Height = 19
+          Top = 152
+          Width = 12
+          Caption = 'V'
+          Font.Height = -16
+          Font.Name = 'Sans'
+          Font.Style = [fsBold]
+          ParentColor = False
+          ParentFont = False
+        end
+        object edtCutV: TJLabeledFloatEdit
+          Left = 8
+          Height = 29
+          Top = 149
+          Width = 114
+          DisplayFormat = '#,0.00'
+          Decimals = 2
+          Value = 0
+          NegativeColor = clDefault
+          EditLabel.Height = 19
+          EditLabel.Width = 114
+          EditLabel.Caption = 'Cutoff Voltage'
+          EditLabel.ParentColor = False
+          TabOrder = 1
+        end
+      end
+      object tsProgram: TTabSheet
+        Caption = 'Program'
+        ClientHeight = 243
+        ClientWidth = 266
+        object Label1: TLabel
+          Left = 8
+          Height = 19
+          Top = 1
+          Width = 86
+          Caption = 'Current step:'
+          ParentColor = False
+        end
+        object btnProg: TButton
+          Left = 185
+          Height = 25
+          Top = 216
+          Width = 75
+          Caption = 'Edit...'
+          OnClick = btnProgClick
+          TabOrder = 0
+        end
+        object lblStep: TLabel
+          Left = 121
+          Height = 19
+          Top = 1
+          Width = 49
+          Caption = 'Testing'
+          Color = clYellow
+          ParentColor = False
+          Transparent = False
+        end
+        object lblStepNum: TLabel
+          Left = 100
+          Height = 19
+          Top = 1
+          Width = 9
+          Caption = '0'
+          ParentColor = False
+        end
+        object lblProgTime: TLabel
+          Left = 137
+          Height = 19
+          Top = 71
+          Width = 62
+          Caption = '00:00:00'
+          ParentColor = False
+        end
+        object shaCapI: TShape
+          Left = 12
+          Height = 12
+          Top = 105
+          Width = 12
+          Brush.Color = clLime
+          Enabled = False
+          Shape = stCircle
+        end
+        object lblCapI: TLabel
+          Left = 30
+          Height = 19
+          Top = 100
+          Width = 64
+          Caption = 'CapI/EneI'
+          Enabled = False
+          ParentColor = False
+        end
+        object btnSkip: TButton
+          Left = 104
+          Height = 25
+          Top = 216
+          Width = 75
+          Caption = 'Skip step'
+          Enabled = False
+          OnClick = btnSkipClick
+          TabOrder = 1
+        end
+        object lblTimer: TLabel
+          Left = 8
+          Height = 19
+          Top = 223
+          Width = 9
+          Caption = '0'
+          ParentColor = False
+        end
+        object edtDelim: TEdit
+          Left = 12
+          Height = 29
+          Top = 65
+          Width = 100
+          MaxLength = 2
+          TabOrder = 2
+          Text = '|'
+        end
+        object Label2: TLabel
+          Left = 12
+          Height = 19
+          Top = 44
+          Width = 91
+          Caption = 'Log separator'
+          ParentColor = False
+        end
+        object stStepFile: TStaticText
+          Left = 7
+          Height = 24
+          Top = 192
+          Width = 255
+          Caption = '(no file)'
+          TabOrder = 3
+        end
+        object Label3: TLabel
+          Left = 9
+          Height = 19
+          Top = 172
+          Width = 25
+          Caption = 'File'
+          ParentColor = False
+        end
+      end
+      object tsConsole: TTabSheet
+        Caption = 'Console'
+        ClientHeight = 243
+        ClientWidth = 266
+        object edtTerm: TEdit
+          Left = 0
+          Height = 29
+          Top = 214
+          Width = 266
+          Align = alBottom
+          TabOrder = 0
+        end
+        object memLog: TMemo
+          AnchorSideLeft.Control = tsConsole
+          AnchorSideTop.Control = tsConsole
+          AnchorSideRight.Control = tsConsole
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = edtTerm
+          Left = 0
+          Height = 214
+          Top = 0
+          Width = 266
+          Anchors = [akTop, akLeft, akRight, akBottom]
+          Font.Height = -8
+          Font.Name = 'Monospace'
+          Lines.Strings = (
+            'STEP      CMD     '
+            'NN:NN: C_NIMH 999.999 999.999 99:99:99:99'
+            'NN:NN: C_NIMH 999.999 999.999 99:99:99:99'
+            'NN:NN: C_NIMH 999.999 999.999 99:99:99:99 12.000 16.000'
+            ''
+            '999:999 WAIT 9999'
+            '999:999 C_NIMH 999.999 999.999 99:00:00:00 12.000 16.000'
+          )
+          OnChange = memLogChange
+          ParentFont = False
+          ScrollBars = ssVertical
+          TabOrder = 1
+        end
+      end
+    end
+    object lblCutEnergy: TLabel
+      Left = 104
+      Height = 19
+      Top = 368
+      Width = 23
+      Caption = 'Wh'
+      Enabled = False
+      ParentColor = False
+    end
+    object chkCutCap: TCheckBox
+      Left = 244
+      Height = 22
+      Top = 336
+      Width = 22
+      Font.Height = -16
+      Font.Name = 'Sans'
+      OnChange = chkCutCapChange
+      ParentFont = False
+      TabOrder = 5
+    end
+    object chkCutEnergy: TCheckBox
+      Left = 104
+      Height = 22
+      Top = 336
+      Width = 22
+      Font.Height = -16
+      Font.Name = 'Sans'
+      OnChange = chkCutEnergyChange
+      ParentFont = False
+      TabOrder = 6
+    end
+    object lblCutCap: TLabel
+      Left = 248
+      Height = 19
+      Top = 368
+      Width = 18
+      Caption = 'Ah'
+      Enabled = False
+      ParentColor = False
+    end
+    object lblTestUnit: TLabel
+      Left = 104
+      Height = 19
+      Top = 312
+      Width = 12
+      Caption = 'A'
+      Font.Height = -16
+      Font.Name = 'Sans'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object tbxMonitor: TToggleBox
+      Left = 157
+      Height = 49
+      Top = 392
+      Width = 115
+      Caption = '&Monitor'
+      TabOrder = 7
+    end
+    object edtTestVal: TJLabeledFloatEdit
+      Left = 8
+      Height = 29
+      Top = 304
+      Width = 90
+      DisplayFormat = '#,0.00'
+      Decimals = 2
+      Value = 0
+      NegativeColor = clDefault
+      EditLabel.Height = 19
+      EditLabel.Width = 90
+      EditLabel.Caption = 'TestVal'
+      EditLabel.ParentColor = False
+      TabOrder = 8
+    end
+    object edtCutCap: TJLabeledFloatEdit
+      Left = 144
+      Height = 29
+      Top = 360
+      Width = 98
+      DisplayFormat = '#,0.00'
+      Decimals = 2
+      Value = 0
+      NegativeColor = clDefault
+      EditLabel.Height = 19
+      EditLabel.Width = 98
+      EditLabel.Caption = 'Cutoff capacity(Ah)'
+      EditLabel.ParentColor = False
+      Enabled = False
+      TabOrder = 9
+    end
+    object edtCutTime: TJLabeledIntegerEdit
+      Left = 144
+      Height = 29
+      Top = 304
+      Width = 98
+      DisplayFormat = '0'
+      Value = 0
+      NegativeColor = clDefault
+      EditLabel.Height = 19
+      EditLabel.Width = 98
+      EditLabel.Caption = 'Max time (min)'
+      EditLabel.ParentColor = False
+      TabOrder = 10
+      OnChange = edtCutTimeChange
+    end
+    object edtCutEnergy: TJLabeledFloatEdit
+      Left = 8
+      Height = 29
+      Top = 360
+      Width = 90
+      DisplayFormat = '#,0.00'
+      Decimals = 2
+      Value = 0
+      NegativeColor = clDefault
+      EditLabel.Height = 19
+      EditLabel.Width = 90
+      EditLabel.Caption = 'Cutoff energy'
+      EditLabel.ParentColor = False
+      Enabled = False
+      TabOrder = 11
+    end
+  end
+  object gbStatus: TGroupBox
+    AnchorSideLeft.Control = Chart
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = gbSettings
+    Left = 720
+    Height = 72
+    Top = 0
+    Width = 280
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Caption = 'Status'
+    Constraints.MaxWidth = 280
+    TabOrder = 2
+  end
+  object Chart: TChart
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = gbSettings
+    Left = 0
+    Height = 430
+    Top = 0
+    Width = 720
+    AxisList = <    
+      item
+        Grid.Color = clGray
+        TickColor = clBlue
+        AxisPen.Color = clBlue
+        Marks.LabelFont.Color = clBlue
+        Marks.Format = '%0:2.2fV'
+        Marks.Frame.Color = clBlue
+        Marks.LabelBrush.Style = bsClear
+        Marks.Range.UseMin = True
+        Marks.Style = smsCustom
+        Minors = <        
+          item
+            Intervals.Count = 1
+            Intervals.MinLength = 5
+            Intervals.Options = [aipUseCount, aipUseMinLength]
+            TickColor = clMaroon
+            Marks.LabelBrush.Style = bsClear
+          end>
+        Range.Max = 10
+        Range.UseMin = True
+        Title.LabelFont.Orientation = 900
+        Title.Caption = '[V]'
+        Title.LabelBrush.Style = bsClear
+        Transformations = ChartAxisTransformationsVoltage
+      end    
+      item
+        Alignment = calBottom
+        Marks.Format = '%2:s'
+        Marks.LabelBrush.Style = bsClear
+        Marks.OverlapPolicy = opHideNeighbour
+        Marks.Source = DateTimeIntervalChartSource
+        Marks.Style = smsLabel
+        Minors = <>
+        Title.Caption = 'Time'
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Alignment = calRight
+        Marks.LabelFont.Color = clRed
+        Marks.Format = '%0:2.2fA'
+        Marks.LabelBrush.Style = bsClear
+        Marks.Style = smsCustom
+        Minors = <>
+        Range.UseMin = True
+        Title.Caption = '[A]'
+        Title.LabelBrush.Style = bsClear
+        Transformations = ChartAxisTransformationsCurrent
+      end>
+    BackColor = clWhite
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Toolset = ChartToolset1
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clWhite
+    object lsCurrent: TLineSeries
+      Title = 'A'
+      AxisIndexX = 1
+      AxisIndexY = 2
+      LinePen.Color = clRed
+      LinePen.Width = 2
+    end
+    object lsVoltage: TLineSeries
+      Title = 'V'
+      AxisIndexX = 1
+      AxisIndexY = 0
+      LinePen.Color = clBlue
+      LinePen.Width = 2
+    end
+    object lsInvisibleCurrent: TLineSeries
+      AxisIndexX = 1
+      AxisIndexY = 2
+      LinePen.Color = clWhite
+    end
+    object lsInvisibleVoltage: TLineSeries
+      AxisIndexX = 1
+      AxisIndexY = 0
+      LinePen.Color = clWhite
+    end
+  end
+  object memStepLog: TMemo
+    AnchorSideLeft.Control = gbConn
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Chart
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = gbSettings
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 262
+    Height = 90
+    Top = 430
+    Width = 458
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Font.Height = -11
+    Font.Name = 'Liberation Mono'
+    Lines.Strings = (
+      ' Step    CMD        (Ah)     (Wh)        Time  StartV  EndV'
+      '111:111|C_NiMH   |999.999|999.999|DDD:HH:MM:SS|12.000|16.000'
+      '111:112|WAIT 9999|       |       |            |16.000|15.000'
+      '111:113|LOOP 9998|       |       |            |      |'
+      '111:111|C_NiMH   |999.999|999.999|DDD:HH:MM:SS|12.000|16.000'
+      '111:112|WAIT 9999|       |       |            |16.000|15.000'
+      '111:113|LOOP 9998|       |       |            |      |'
+    )
+    ParentFont = False
+    ScrollBars = ssVertical
+    TabOrder = 4
+  end
+  object Serial: TLazSerial
+    Active = False
+    BaudRate = br__9600
+    DataBits = db8bits
+    Parity = pOdd
+    FlowControl = fcNone
+    StopBits = sbOne
+    Device = '/dev/ttyUSB0'
+    RcvLineCRLF = False
+    left = 1240
+    top = 720
+  end
+  object DateTimeIntervalChartSource: TDateTimeIntervalChartSource
+    DateTimeFormat = 'HH:MM:SS'
+    Steps = [dtsHour, dtsMinute, dtsSecond]
+    left = 440
+    top = 80
+  end
+  object ChartAxisTransformationsCurrent: TChartAxisTransformations
+    left = 416
+    top = 200
+    object ChartAxisTransformationsCurrentAutoScaleAxisTransform: TAutoScaleAxisTransform
+    end
+  end
+  object ChartAxisTransformationsVoltage: TChartAxisTransformations
+    left = 416
+    top = 280
+    object ChartAxisTransformationsVoltageAutoScaleAxisTransform: TAutoScaleAxisTransform
+    end
+  end
+  object ChartToolset1: TChartToolset
+    left = 312
+    top = 80
+    object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
+    end
+  end
+  object mnPopup: TPopupMenu
+    left = 192
+    top = 263
+    object mniSavePNG: TMenuItem
+      Caption = 'Save to &PNG...'
+      ShortCut = 113
+      OnClick = mniSavePNGClick
+    end
+    object mniSaveCSV: TMenuItem
+      Caption = 'Save to &CSV...'
+      ShortCut = 16467
+      OnClick = mniSaveCSVClick
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object mniDoLog: TMenuItem
+      Caption = '&Auto log'
+      Checked = True
+    end
+    object mniSetCSVLogfile: TMenuItem
+      Caption = 'Set CSV &Log file...'
+      OnClick = mniSetCSVLogfileClick
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object mniLoadStep: TMenuItem
+      Caption = 'Load step file'
+      ShortCut = 114
+      OnClick = mniLoadStepClick
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
+    object mniSetName: TMenuItem
+      Caption = 'Set taskbar name'
+      ShortCut = 115
+      OnClick = mniSetNameClick
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object mniSettings: TMenuItem
+      Caption = '&Settings'
+      ShortCut = 120
+      OnClick = mniSettingsClick
+    end
+  end
+  object sdCSV: TSaveDialog
+    DefaultExt = '.csv'
+    Filter = 'CSV files|*.csv|All files|*.*'
+    left = 168
+    top = 392
+  end
+  object sdPNG: TSaveDialog
+    DefaultExt = '.png'
+    Filter = 'PNG files|*.png|All files|*.*'
+    left = 152
+    top = 208
+  end
+  object sdLogCSV: TSaveDialog
+    DefaultExt = '.csv'
+    Filter = 'CSV files|*.csv|All files|*.*'
+    left = 248
+    top = 392
+  end
+  object tmrWait: TTimer
+    Enabled = False
+    OnTimer = tmrWaitTimer
+    left = 892
+    top = 228
+  end
+  object alList: TActionList
+    left = 168
+    top = 113
+    object acSavePNG: TAction
+      Caption = 'Save'
+      OnExecute = mniSavePNGClick
+    end
+    object acSaveCSV: TAction
+      Caption = 'acSaveCSV'
+      OnExecute = mniSaveCSVClick
+      ShortCut = 16467
+    end
+    object acBorderName: TAction
+      Caption = 'acBorderName'
+      OnExecute = mniSetNameClick
+      ShortCut = 115
+    end
+    object acLoadStep: TAction
+      Caption = 'acLoadStep'
+      OnExecute = mniLoadStepClick
+      ShortCut = 114
+    end
+    object acSettings: TAction
+      Caption = 'acSettings'
+      OnExecute = mniSettingsClick
+      ShortCut = 120
+    end
+  end
+  object mnSerial: TPopupMenu
+    left = 175
+    top = 459
+  end
+end

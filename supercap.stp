@@ -1,0 +1,6 @@
+c_cccv volt=3 curr=0.1
+wait 1
+d_cr cutv=0.8 res=12
+loop 5
+c_cccv volt=3.2 curr=0.2
+
