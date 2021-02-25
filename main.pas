@@ -523,14 +523,13 @@ begin
 end;
 
 
-function checksum(s: string; Pos: Integer): Char;
+function checksum(s: string; Pos: Integer): Char; // Seems EBC uses a stupid XOR CRC
 var
   I: Integer;
 begin
   Result := #0;
   for I := 2 to Pos - 1 do
   begin
-    //if I <> Pos then
     Result := Chr(Ord(Result) xor Ord(s[I]));
   end;
 end;
