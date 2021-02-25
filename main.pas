@@ -31,7 +31,6 @@ const
   cConn = 'Conn';
   crcsendpos = 9;
   crcrecvpos = 18;
-  cPacketfile = 'packets.dat';
   cChanged = 'Changed';
   cUnChanged = '';
   cA = 'A';
@@ -96,6 +95,7 @@ const
   cChkSetting = 'CheckSetting';
   cSettings = 'Settings';
   cConf = '.conf';
+  cInit = '.init';
   cSaveDir = 'SaveDir';
   cLogDir = 'LogDir';
   cStepDir = 'StepFileDir';
@@ -408,6 +408,36 @@ implementation
 function ValOk(ANum: Extended): Boolean;
 begin
   Result := not (IsNan(ANum));// or IsInf(ANum));
+end;
+
+function TextFileCopy(AInFile, AOutFile: string): Boolean;
+var
+  fi, fo: Text;
+  s: string;
+begin
+  try
+    if FileExists(AInFile) then
+    begin
+      AssignFile(fi, AInFile);
+      AssignFile(fo, AOutFile);
+      Reset(fi);
+      ReWrite(fo);
+      while not Eof(fi) do
+      begin
+        ReadLn(fi, s);
+        WriteLn(fo, s);
+      end;
+      Flush(fo);
+      CloseFile(fi);
+      CloseFile(fo);
+      Result := True;
+    end else
+    begin
+      Result := False;
+    end;
+  except
+    Result := False;
+  end;
 end;
 
 function AlignL(AStr: string; ALen: Integer): string;
@@ -2108,6 +2138,10 @@ begin
   frmSettings := TfrmSettings.Create(Self);
   FAppDir := ExtractFilePath(Application.ExeName);
   FConfFile := ChangeFileExt(Application.ExeName, cConf);
+  if not FileExists(FConfFile) then
+  begin
+    TextFileCopy(ChangeFileExt(Application.ExeName, cInit), FConfFile);
+  end;
   FixLabels(-1);
   EnumerateSerial;
   LoadPackets;

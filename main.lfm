@@ -262,7 +262,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 132
+          ClientHeight = 115
           ClientWidth = 262
           ItemIndex = 4
           Items.Strings = (
@@ -377,7 +377,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 111
+          ClientHeight = 94
           ClientWidth = 262
           ItemIndex = 0
           Items.Strings = (
