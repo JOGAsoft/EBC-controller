@@ -483,7 +483,7 @@ end;
 
 function MyTimeToStr(ATime: TDateTime): string;
 begin
-  Result :=  FloatToStrF(Trunc(ATime), ffFixed, 18, 0) + ':' + FormatDateTime('hh:mm:ss', ATime);
+  Result :=  IntToStr(Trunc(ATime)) + ':' + FormatDateTime('hh:mm:ss', ATime);
 end;
 
 function HexToOrd(s: string): Integer;
