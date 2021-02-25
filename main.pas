@@ -502,7 +502,7 @@ begin
     begin
       Result := Result + M * (Ord(s[I]) - Ord('A') + 10);
     end;
-    M := M * 16;
+    M := M * $10;
   end;
 end;
 
