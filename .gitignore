@@ -71,4 +71,4 @@ modules/
 # Additional files to ignore
 .ebackup.*
 ebcc.conf
-
+ebcc

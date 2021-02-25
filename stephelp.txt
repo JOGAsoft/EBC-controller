@@ -1,0 +1,7 @@
+Charge:    c_[NiMH|NiCd|LiPo|LiFe|Ac] Cells=n Curr=I [CutA=I|Cap=C|Energy=W|Time=t]
+Discharge: d_[CC|CP|CR] [Curr=I|Power=P|Res=R] CutV=U [Cap=C|Energy=W|Time=t]
+Wait:      Wait t (minutes)
+Loop:      Loop n (run thru list n more times)
+Cutoffs:   [c/d] CutA=current(A) CutC=capacity(Ah) Energy=energy(Wh) Time=(minutes)
+Examples:  c_NiMH Cells=4 Curr=0.75 CutA=0.2 Time=180
+           d_CR Res=10 CutV=2.8 Energy=6 Time=360
