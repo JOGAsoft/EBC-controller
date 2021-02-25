@@ -1,0 +1,163 @@
+[1]
+Command=c_NiMH
+Name=NiMH - Nickel-metal Hydride
+Start=fa 21 00 00 00 00 00 00 00 f8
+Cont=fa 28 00 00 00 00 00 00 00 f8
+AutoOff=16
+Type=Charge
+
+[2]
+Command=c_NiCd
+Name=NiCd - Nickel-cadmium
+Start=fa 31 00 00 00 00 00 00 00 f8
+Cont=fa 38 00 00 00 00 00 00 00 f8
+AutoOff=17
+Type=Charge
+
+[4]
+Command=c_LiPo
+Name=LiPo - Lithium Ion or Polymer
+Start=fa 41 00 00 00 00 00 00 00 f8
+Cont=fa 48 00 00 00 00 00 00 00 f8
+AutoOff=18
+Type=Charge
+CellVoltageInfo=4.2
+
+[5]
+Command=c_LiFe
+Name=LiFe - Lithium Iron Phosphate
+Start=fa 51 00 00 00 00 00 00 00 f8
+Cont=fa 58 00 00 00 00 00 00 00 f8
+AutoOff=19
+Type=Charge
+CellVoltageInfo=3.65
+
+[6]
+Command=c_Pb
+Name=PbAc - Lead Acid
+Start=fa 61 00 00 00 00 00 00 00 f8
+Cont=fa 68 00 00 00 00 00 00 00 f8
+AutoOff=1a
+Type=Charge
+CellVoltageInfo=2.4
+
+[7]
+Command=c_CCCV
+Name=CCCV - CC and CV charging
+Start=fa 71 00 00 00 00 00 00 00 f8
+Cont=fa 78 00 00 00 00 00 00 00 f8
+AutoOff=1b
+Type=ChargeCV
+CellVoltageInfo=5
+
+[9]
+Command=d_CC
+Name=CC - Constant Current
+Start=fa 01 00 00 00 00 00 00 00 f8
+Adjust=fa 07 00 00 00 00 00 00 00 f8
+Cont=fa 08 00 00 00 00 00 00 00 f8
+AutoOff=14
+Type=Discharge
+TestVal=I
+
+[10]
+Command=d_CP
+Name=CP - Constant Power
+Start=fa 11 00 00 00 00 00 00 00 f8
+Cont=fa 18 00 00 00 00 00 00 00 f8
+Type=Discharge
+AutoOff=15
+TestVal=P
+
+[11]
+Command=d_CR
+Name=CR - Constant Resistance(SW)
+Start=fa 01 00 00 00 00 00 00 00 f8
+Adjust=fa 07 00 00 00 00 00 00 00 f8
+Cont=fa 08 00 00 00 00 00 00 00 f8
+AutoOff=ff
+Type=Discharge
+TestVal=R
+
+[12]
+Command=Wait
+Type=Control
+
+[13]
+Command=Loop
+Type=Control
+
+[Default]
+ChargeCurrent=0.06
+DischargeCurrent=0.06
+ConstantVoltage=5.00
+DischargePower=1.00
+DischargeResistance=10
+Cells=1
+ModeCommand=d_CC
+ReadOnly=1
+
+[Startup]
+StartSelection=0
+
+[Selection_0]
+String=Load last settings
+
+[Selection_1]
+String=Load default settings
+ChargeIndex=-1
+DischargeIndex=1
+TabIndex=1
+Cells=1
+TestVal=1
+CutOffA=0
+CutOffATime=0
+MaxTime=0
+CutOffV=1
+ReadOnly=1
+
+[Selection_2]
+String=Load section 2
+ReadOnly=0
+
+[Selection_3]
+String=Load section 3
+ReadOnly=0
+
+[Settings]
+CheckSetting_0=0
+CheckSetting_1=1
+CheckSetting_2=1
+CheckSetting_3=1
+ProgFile=
+CheckSetting_4=1
+CheckSetting_5=0
+IntegrationTime=60
+Monitor=1
+
+[Conn]
+Connect=fa 05 00 00 00 00 00 00 05 F8
+Disconnect=fa 06 00 00 00 00 00 00 06 F8
+Stop=fa 02 00 00 00 00 00 00 02 f8
+
+[Models]
+Name_1=EBC-A05
+Name_2=EBC-A10H
+
+[EBC-A05]
+Ident=05
+IFactor=10
+UFactor=1
+Connect=fa 05 00 00 00 00 00 00 05 F8
+Disconnect=fa 06 00 00 00 00 00 00 06 F8
+Stop=fa 02 00 00 00 00 00 00 02 f8
+
+[EBC-A10H]
+Ident=06
+IFactor=1
+UFactor=1
+Connect=fa 05 00 00 00 00 00 00 05 F8
+Disconnect=fa 06 00 00 00 00 00 00 06 F8
+Stop=fa 02 00 00 00 00 00 00 02 f8
+
+
