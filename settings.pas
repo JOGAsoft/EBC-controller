@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  EditBtn, Spin, JLabeledIntegerEdit;
+  EditBtn, JLabeledIntegerEdit;
 
 const
   cAutoLoad = 0;

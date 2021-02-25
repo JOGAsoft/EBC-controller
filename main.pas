@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   EditBtn, ComCtrls, Menus, Buttons, ActnList, TAGraph, TASeries,
   TAIntervalSources, TATransformations, TATools, LazSerial, DateUtils,
-  TACustomSeries, SynEdit, StepForm, MyIniFile, JLabeledIntegerEdit,
+  TACustomSeries, SynEdit, StepForm, MyIniFile, JLabeledIntegerEdit, math,
   JLabeledFloatEdit, settings, typinfo;//, LCLIntf, LCLType;
 
 const
@@ -101,6 +101,7 @@ const
   cStepDir = 'StepFileDir';
   cTabIndex = 'TabIndex';
   cReadOnly = 'ReadOnly';
+  cMonitor = 'Monitor';
 
   cWinMaximized = 'Maximized';
   cWinWidth = 'Width';
@@ -268,6 +269,7 @@ type
     Serial: TLazSerial;
     shaCapI: TShape;
     shpConn: TShape;
+    stRunMode: TStaticText;
     stStepFile: TStaticText;
     tsConsole: TTabSheet;
     tmrWait: TTimer;
@@ -306,6 +308,7 @@ type
     procedure mniSettingsClick(Sender: TObject);
     procedure rgChargeClick(Sender: TObject);
     procedure rgDischargeClick(Sender: TObject);
+    procedure tbxMonitorChange(Sender: TObject);
     procedure tmrWaitTimer(Sender: TObject);
     procedure tsChargeEnter(Sender: TObject);
     procedure tsDischargeEnter(Sender: TObject);
@@ -390,6 +393,8 @@ type
     procedure FreezeEdits;
     procedure UnlockEdits;
     procedure EnumerateSerial;
+    procedure RunModeOffOrMonitor;
+    procedure SetRunMode(ARunMode: TRunMode);
   public
   end;
 
@@ -399,6 +404,12 @@ var
 implementation
 
 {$R *.lfm}
+
+function ValOk(ANum: Extended): Boolean;
+begin
+  Result := not (IsNan(ANum));// or IsInf(ANum));
+end;
+
 function AlignL(AStr: string; ALen: Integer): string;
 begin
   Result := AStr;
@@ -511,10 +522,10 @@ begin
 
   repeat
     s := Serial.ReadData;
-    if s > '' then
+    if Length(s) > 0 then
     begin
       r := r + s;
-      Inc(N);
+      Inc(N, Length(s));
     end;
   until (N = 19) or (MillisecondsBetween(Now, E) > 200);
 
@@ -532,6 +543,9 @@ begin
         FIFactor := FModels[FModel].IFactor;
       end;
     end;
+  end else
+  begin
+    DumpChkSum('E:', r, crcrecvpos);
   end;
   FLastTime := E;
   shpConn.Brush.Color := clDefault;
@@ -540,7 +554,7 @@ end;
 
 procedure TfrmMain.InterpretPackage(APacket: string; ANow: TDateTime);
 var
-  P: Extended;
+  P, tmp: Extended;
   dT: Integer;
   T: TDateTime;
 begin
@@ -558,10 +572,39 @@ begin
   begin
     FLastI := DecodeCurrent(Copy(APacket, 3, 2));
     FLastU := DecodeVoltage(Copy(APacket, 5, 2));
-    if (not (FRunMode in [rmNone])) or (tbxMonitor.Checked) then
-    begin
-      FCurrentCapacity := DecodeCharge(Copy(APacket, 7, 2));
 
+    FCurrentCapacity := DecodeCharge(Copy(APacket, 7, 2));
+
+    stText[cstVoltage].Caption := MyFloatStr(FLastU) + 'V';
+    stText[cstCurrent].Caption := MyFloatStr(FLastI) + 'A';
+    P := FLastU * FLastI;
+    stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 1) + 'W';
+    stText[cstCapacity].Caption := GetCharge(FCurrentCapacity);
+    tmp := (P * dT) / 3600000;
+    if ValOk(tmp) then
+    begin
+      FEnergy := FEnergy + tmp;
+      stText[cstEnergy].Caption := GetEnergy(FEnergy);
+    end;
+    stText[cstTime].Caption := MyTimeToStr(T);
+
+    if FLastI <> 0 then
+    begin
+      tmp := FLastU / FLastI;
+      if ValOk(tmp) then
+      begin
+        stText[cstResistance].Caption := MyFloatStr(tmp) + cR;
+      end;
+    end;
+
+
+    if FInProgram then
+    begin
+      lblProgTime.Caption := TimeToStr(ANow - FStepTime);
+    end;
+
+    if not (FRunMode in [rmNone]) then
+    begin
       SetLength(FData, Length(FData) + 1);
       with FData[Length(FData) - 1] do
       begin
@@ -573,106 +616,92 @@ begin
           SaveCSVLine(FLogFile, vTime, FLastI, FLastU);
         end;
       end;
-
-      stText[cstVoltage].Caption := MyFloatStr(FLastU) + 'V';
-      stText[cstCurrent].Caption := MyFloatStr(FLastI) + 'A';
-      P := FLastU * FLastI;
-      stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 1) + 'W';
-      stText[cstCapacity].Caption := GetCharge(FCurrentCapacity);
-      FEnergy := FEnergy + (P * dT) / 3600000;
-      stText[cstEnergy].Caption := GetEnergy(FEnergy);
-      stText[cstTime].Caption := MyTimeToStr(T);
-      if FInProgram then
-      begin
-        lblProgTime.Caption := TimeToStr(ANow - FStepTime);
-      end;
       lsVoltage.AddXY(T, FLastU);
       lsInvisibleVoltage.AddXY(0, Round1V(FLastU));
       lsCurrent.AddXY(T, FLastI);
       lsInvisibleCurrent.AddXY(0, Round100mA(FLastI));
+    end;
 
-      FDelta[FDeltaIndex].SumV := FDelta[FDeltaIndex].SumV + FLastU;
-      FDelta[FDeltaIndex].SumA := FDelta[FDeltaIndex].SumA + FLastI;
-      Inc(FDelta[FDeltaIndex].Values);
+    FDelta[FDeltaIndex].SumV := FDelta[FDeltaIndex].SumV + FLastU;
+    FDelta[FDeltaIndex].SumA := FDelta[FDeltaIndex].SumA + FLastI;
+    Inc(FDelta[FDeltaIndex].Values);
 
 {      if dT <> 0 then
-      begin
-        stText[cstdV].Caption := FloatToStrF((1000000 * (FLastU - lU)) / (dT ), ffFixed, 18, 2) + 'mV/s';
-        stText[cstdA].Caption := FloatToStrF((1000000 * (FLastI - lI)) / (dT ), ffFixed, 18, 2) + 'mA/s';
-      end;
+    begin
+      stText[cstdV].Caption := FloatToStrF((1000000 * (FLastU - lU)) / (dT ), ffFixed, 18, 2) + 'mV/s';
+      stText[cstdA].Caption := FloatToStrF((1000000 * (FLastI - lI)) / (dT ), ffFixed, 18, 2) + 'mA/s';
+    end;
 }
 
-      dT := MillisecondsBetween(FDelta[FDeltaIndex].Time, ANow);
-      if  dT >= FIntTime then
+    dT := MillisecondsBetween(FDelta[FDeltaIndex].Time, ANow);
+    if dT >= FIntTime then if dT <> 0 then
+    begin
+      FDelta[FDeltaIndex].SumV := FDelta[FDeltaIndex].SumV / FDelta[FDeltaIndex].Values;
+      FDelta[FDeltaIndex].SumA := FDelta[FDeltaIndex].SumA / FDelta[FDeltaIndex].Values;
+      if ValOk(FDelta[FDeltaIndex].SumA) then if ValOk(FDelta[FDeltaIndex].SumV) then
       begin
-        FDelta[FDeltaIndex].SumV := FDelta[FDeltaIndex].SumV / FDelta[FDeltaIndex].Values;
-        FDelta[FDeltaIndex].SumA := FDelta[FDeltaIndex].SumA / FDelta[FDeltaIndex].Values;
-        stText[cstdV].Caption :=
-          FloatToStrF((60000000 *
-          (FDelta[FDeltaIndex].SumV - FDelta[FDeltaIndex xor $01].SumV))
-          / dT, ffFixed, 18, 2) + 'mV/m';
-        stText[cstdA].Caption :=
-          FloatToStrF((60000000 *
-          (FDelta[FDeltaIndex].SumA - FDelta[FDeltaIndex xor $01].SumA))
-          / (dT ), ffFixed, 18, 2) + 'mA/m';
+        tmp := (FDelta[FDeltaIndex].SumV - FDelta[FDeltaIndex xor $01].SumV) / dT;
+        if ValOk(tmp) then
+        begin
+          stText[cstdV].Caption := FloatToStrF(60000000 * tmp , ffFixed, 18, 2) + 'mV/m';
+        end;
+        tmp := (FDelta[FDeltaIndex].SumA - FDelta[FDeltaIndex xor $01].SumA) / dT;
+        if ValOk(tmp) then
+        begin
+          stText[cstdA].Caption := FloatToStrF(60000000 * tmp, ffFixed, 18, 2) + 'mA/m';
+        end;
       //  stText[cstDbg1].Caption :=   IntToStr(FDelta[FDeltaIndex].Values);
       //  stText[cstDbg2].Caption := FloatToStr(FDelta[FDeltaIndex].SumV);
       //  stText[cstDbg3].Caption := 'Index: ' + IntToStr(FDeltaIndex) + ' : ' + IntToStr(FDeltaIndex xor $01);
-
-        FDeltaIndex := FDeltaIndex xor $01;
-        FDelta[FDeltaIndex].SumV := 0;
-        FDelta[FDeltaIndex].SumA := 0;
-        FDelta[FDeltaIndex].Values := 0;
-        FDelta[FDeltaIndex].Time := ANow;
       end;
+      FDeltaIndex := FDeltaIndex xor $01;
+      FDelta[FDeltaIndex].SumV := 0;
+      FDelta[FDeltaIndex].SumA := 0;
+      FDelta[FDeltaIndex].Values := 0;
+      FDelta[FDeltaIndex].Time := ANow;
+    end;
 
-      DumpChkSum('Rec:', APacket, crcrecvpos);
+    DumpChkSum('R:', APacket, crcrecvpos);
 
-      if FLastI <> 0 then
+    Inc(FSampleCounter);
+
+    if (FRunMode = rmDischargingCR) and (FSampleCounter mod 3 = 0) then
+    begin
+      SendData(NewMakePacket(FPacketIndex, smAdjust));
+    end;
+
+    // AutoOff check
+    if (not (FRunMode in [rmNone, rmMonitor, rmWait, rmLoop])) and ((APacket[2] = FPackets[FPacketIndex].AutoOff) or ((FSampleCounter > 3) and (FLastI < 0.0001))) then
+    begin
+      EBCBreak;
+    end;
+
+    // Cutoff checks
+    if (FRunMode = rmCharging) and (FSampleCounter > 3) then
+    begin
+      if FLastI < FChecks.cCurrent then
       begin
-        stText[cstResistance].Caption := MyFloatStr(FlastU / FLastI) + cR;
-//            DoLog('Effective resistance: ' + MyFloatStr(FLastU / FLastI) + cR);
-      end;
-
-      Inc(FSampleCounter);
-      if (FRunMode = rmDischargingCR) and (FSampleCounter mod 3 = 0) then
-      begin
-        SendData(NewMakePacket(FPacketIndex, smAdjust));
-      end;
-
-      // AutoOff check
-      if (not (FRunMode in [rmWait, rmLoop])) and ((APacket[2] = FPackets[FPacketIndex].AutoOff) or ((FSampleCounter > 3) and (FLastI < 0.0001))) then
-      begin
-        EBCBreak;
-      end;
-
-      // Cutoff checks
-      if (FRunMode = rmCharging) and (FSampleCounter > 3) then
-      begin
-        if FLastI < FChecks.cCurrent then
+        if FChecks.TimerRunning then
         begin
-          if FChecks.TimerRunning then
+          DoLog('Time: ' + IntToStr(SecondsBetween(FChecks.ThresholdTime, Now)));
+          if SecondsBetween(FChecks.ThresholdTime, Now) div 60 >= FChecks.cDwellTime then
           begin
-            DoLog('Time: ' + IntToStr(SecondsBetween(FChecks.ThresholdTime, Now)));
-            if SecondsBetween(FChecks.ThresholdTime, Now) div 60 >= FChecks.cDwellTime then
-            begin
-              EBCBreak;
-            end;
-          end else
+            EBCBreak;
+          end;
+        end else
+        begin
+          FChecks.ThresholdTime := Now;
+          FChecks.TimerRunning := True;
+          DoLog('Timer started.');
+          if FChecks.cDwellTime = 0 then
           begin
-            FChecks.ThresholdTime := Now;
-            FChecks.TimerRunning := True;
-            DoLog('Timer started.');
-            if FChecks.cDwellTime = 0 then
-            begin
-              EBCBreak;
-            end;
+            EBCBreak;
           end;
         end;
-        if FCurrentCapacity > FChecks.cCapacity then
-        begin
-          EBCBreak;
-        end;
+      end;
+      if FCurrentCapacity > FChecks.cCapacity then
+      begin
+        EBCBreak;
       end;
     end;
   end else
@@ -689,8 +718,8 @@ begin
   s := '';
   for I := 1 to Length(snd) do
   begin
-    s := s + IntToHex(Ord(snd[I]),2);
-    if I < Length(snd) then s := s + '|';
+    s := s + LowerCase(IntToHex(Ord(snd[I]),2));
+//    if I < Length(snd) then s := s + '|';
   end;
   DoLog(lbl + ' ' + s + ' ' + IntToHex(Ord(checksum(snd, Pos)),2));
 end;
@@ -706,7 +735,7 @@ begin
     s := snd;
     s[crcsendpos] := checksum(s, crcsendpos);
     Serial.WriteData(s);
-    DumpChkSum('Send', s, crcsendpos);
+    DumpChkSum('S:', s, crcsendpos);
   end;
   shpConn.Brush.Color := clDefault;
 end;
@@ -917,126 +946,7 @@ begin
   FConn.Stop := GetHexPacketFromIni(ini, cConn, cStop);
   ini.Free;
 end;
-{
-function TfrmMain.MakePacket(AType: TSendMode): string;
-var
-  TestVal: Extended;
-  c: string;
-  Cells: Integer;
-begin
-  case AType of
-    smConnStop:
-    begin
-      Result := FModels[FModel].ConnPackets.Stop;
-    end;
-    smConnect:
-    begin
-      Result := FConnectStr;
-    end;
-    smDisConnect:
-    begin
-      Result := FModels[FModel].ConnPackets.Disconnect;
-    end;
-    smStart:
-    begin
-      Result := FPackets[FPacketIndex].Start;
-    end;
-    smCont:
-    begin
-      Result := FPackets[FPacketIndex].Cont;
-    end;
-    smAdjust:
-    begin
-      if FPackets[FPacketIndex].Adjust <> '' then
-      begin
-        Result := FPackets[FPacketIndex].Adjust;
-      end else
-      begin
-        Result := FPackets[FPacketIndex].Start;
-      end;
-    end;
-  end;
 
-  if Length(Result) = 10 then
-  begin
-    if pcProgram.ActivePage = tsCharge then
-    begin
-      if not NumEdtOk(edtTestVal.Text, TestVal) then
-      begin
-        TestVal := 0.060;
-        edtTestVal.Text := '0.060';
-      end;
-      c := EncodeCurrent(TestVal);
-      Result[3] := c[1];
-      Result[4] := c[2];
-      Cells := StrToInt(edtCells.Text);
-      Result[6] := Chr(Cells);
-    end else // Discharge
-    begin
-      case rgDisCharge.ItemIndex of
-        0: // CC mode
-        begin
-          if not NumEdtOk(edtTestVal.Text, TestVal) then
-          begin
-            TestVal := 0.060;
-            edtTestVal.Text := '0.060';
-          end;
-          c := EncodeCurrent(TestVal);
-          Result[3] := c[1];
-          Result[4] := c[2];
-          if not NumEdtOk(edtCutV.Text, TestVal) then
-          begin
-            // Raise error?
-          end;
-          c := EncodeVoltage(TestVal);
-          Result[5] := c[1];
-          Result[6] := c[2];
-        end;
-        1: // CP mode
-        begin
-          if NumEdtOk(edtTestVal.Text, TestVal) then
-          begin
-            c := EncodePower(TestVal);
-          end else
-          begin
-            c := EncodePower(1);
-            edtTestVal.Text := '1';
-          end;
-          Result[3] := c[1];
-          Result[4] := c[2];
-
-        end;
-        2: // Software CR mode
-        begin
-          if not NumEdtOk(edtTestVal.Text, TestVal) then
-          begin
-            TestVal := 10.0; // Ohms
-            edtTestVal.Text := '10.0';
-          end;
-          if TestVal < 0.01 then TestVal := 0.01;
-          FRunMode := rmDischargingCR;
-          // I=U/R
-          TestVal := FLastU / TestVal;
-          if TestVal < 0.06 then
-          begin
-            TestVal := 0.06;
-          end;
-          c := EncodeCurrent(TestVal);
-          Result[3] := c[1];
-          Result[4] := c[2];
-        end;
-      end;
-    end;
-    if NumEdtOk(edtCutTime.Text, TestVal) then
-    begin
-      c := EncodeTimer(Round(TestVal));
-      Result[7] := c[1];
-      Result[8] := c[2];
-    end;
-  end;
-  //Result[crcsendpos] := checksum(Result, crcsendpos); //CRC is calculated in SendData
-end;
- }
 function TfrmMain.NewMakePacket(Packet: Integer; AType: TSendMode): string;
 begin
   case FPackets[Packet].Method of
@@ -1165,7 +1075,7 @@ begin
   end;
   FChecks.TimerRunning := False;
   SendData(MakeConnPacket(smConnStop));
-  FRunMode := rmNone;
+  RunModeOffOrMonitor;
   if mniDoLog.Checked then
   begin
     Flush(FLogFile);
@@ -1306,6 +1216,56 @@ begin
     until FindNext(S) <> 0;
   end;
   FindClose(S);
+end;
+
+procedure TfrmMain.RunModeOffOrMonitor;
+begin
+  if tbxMonitor.Checked then
+  begin
+    SetRunMode(rmMonitor);
+  end else
+  begin
+    SetRunMode(rmNone);
+  end;
+end;
+
+procedure TfrmMain.SetRunMode(ARunMode: TRunMode);
+begin
+  FRunMode := ARunMode;
+  case FRunMode of
+    rmNone:
+    begin
+      stRunMode.Caption := 'N';
+    end;
+    rmMonitor:
+    begin
+      stRunMode.Caption := 'M';
+    end;
+    rmCharging:
+    begin
+      stRunMode.Caption := 'C';
+    end;
+    rmDischarging:
+    begin
+      stRunMode.Caption := 'D';
+    end;
+    rmDischargingCR:
+    begin
+      stRunMode.Caption := cR;
+    end;
+    rmWait:
+    begin
+      stRunMode.Caption := 'W';
+    end;
+    rmLoop:
+    begin
+      stRunMode.Caption := 'L';
+    end;
+    rmEnd:
+    begin
+      stRunMode.Caption := 'E';
+    end;
+  end;
 end;
 
 function TfrmMain.GetStepNum: string;
@@ -1451,6 +1411,8 @@ begin
     frmStep.Caption := frmSettings.edtProgFile.FileName;
   end;
   frmSettings.edtIntTime.Value := ini.ReadInteger(cSettings, cIntTime, 60);
+  tbxMonitor.Checked := ini.ReadBool(cSettings, cMonitor, True);
+
   frmMain.Width := ini.ReadInteger(cAppSec, cWinWidth, frmMain.Width);
   frmMain.Height := ini.ReadInteger(cAppSec, cWinHeight, frmMain.Height);
   if ini.ReadBool(cAppSec, cWinMaximized, False) then
@@ -1510,6 +1472,8 @@ begin
   begin
     ini.WriteBool(cSettings, cChkSetting + '_' + IntToStr(I), frmSettings.cgSettings.Checked[I]);
   end;
+  ini.WriteBool(cSettings, cMonitor, tbxMonitor.Checked);
+
 
   ini.WriteBool(cAppSec, cWinMaximized, (frmMain.WindowState = wsMaximized));
   ini.WriteInteger(cAppSec, cWinWidth, frmMain.Width);
@@ -1690,7 +1654,7 @@ begin
       I := FindPacket(Command);
       lblStepNum.Caption := IntToStr(FProgramStep + 1);
       lblStep.Caption := ' ' + Command + ' ';
-      FRunMode := Mode;
+      SetRunMode(Mode);
       if I > -1 then
       begin
         FixLabels(I);
@@ -1834,13 +1798,14 @@ begin
       Serial.Device := edtDevice.Text;
       Serial.OnRxData := @SerialRec;
       Serial.Open;
+      SendData(MakeConnPacket(smConnStop));
       SendData(MakeConnPacket(smConnect));
       btnConnect.Caption := '&Disconnect';
-      tbxMonitor.Enabled := True;
-      FRunMode := rmNone;
+      RunModeOffOrMonitor;
       btnStart.Enabled := True;
       FLastU := 0;
       shpConn.Visible := True;
+      mnSerial.Items.Enabled := False;
     end else
     begin
       SendData(MakeConnPacket(smDisconnect));
@@ -1851,6 +1816,7 @@ begin
       FConnState := csNone;
       FModel := -1;
       Serial.Close;
+      mnSerial.Items.Enabled := True;
     end;
   except
     ShowMessage('Could not connect to ' + edtDevice.Text);
@@ -1913,7 +1879,7 @@ begin
     if rgCharge.ItemIndex > -1 then
     begin;
       FPacketIndex := GetPointer(rgCharge);
-      FRunMode := rmCharging;
+      SetRunMode(rmCharging);
     end;
   end else if pcProgram.ActivePage = tsDischarge then
   begin
@@ -1921,7 +1887,7 @@ begin
     if rgDisCharge.ItemIndex > -1 then
     begin;
       FPacketIndex := GetPointer(rgDisCharge);
-      FRunMode := rmDischarging;
+      SetRunMode(rmDischarging);
     end;
   end else if pcProgram.ActivePage = tsProgram then
   begin
@@ -1944,7 +1910,7 @@ begin
   begin
     if FPackets[FPacketIndex].TestVal = tvResistance then
     begin
-      FRunMode := rmDischargingCR;
+      SetRunMode(rmDischargingCR);
     end;
   end;
   if FInProgram or (FRunMode in [rmCharging, rmDischarging, rmDischargingCR]) then
@@ -2080,12 +2046,14 @@ var
   N: Integer;
 //  A: TAction;
 begin
-  FRunMode := rmNone;
+  SetRunMode(rmNone);
   FConnState := csNone;
   FInProgram := False;
   FStartTime := Now;
   FShowJoule := False;
   FShowCoulomb := False;
+  FDelta[0].Time := Now;
+  FDelta[1].Time := Now;
 
   SetLength(stText, cstMax + 1);
   for I := Low(stText) to High(stText) do
@@ -2124,6 +2092,7 @@ begin
   stText[cstEnergy].Caption := '000.000Wh';
 
   lblModel.Caption := cNotConnected;
+  stRunMode.BringToFront;
   N := 0;
   for I := 0 to rgCharge.Items.Count -1 do
   begin
@@ -2168,7 +2137,13 @@ end;
 
 procedure TfrmMain.mniLoadStepClick(Sender: TObject);
 begin
-  frmStep.mniOpenClick(Sender);
+  if frmStep.odOpen.Execute then
+  begin
+    frmStep.memStep.Lines.LoadFromFile(frmStep.odOpen.FileName);
+    frmStep.Caption := frmStep.odOpen.FileName;
+    frmStep.sdSave.FileName := frmStep.odOpen.FileName;
+    stStepFile.Caption := ExtractFileName(frmStep.odOpen.FileName);
+  end;
 end;
 
 procedure TfrmMain.mniSetCSVLogfileClick(Sender: TObject);
@@ -2257,6 +2232,23 @@ begin
     end;
   end;
 //  FPacketIndex := I;
+end;
+
+procedure TfrmMain.tbxMonitorChange(Sender: TObject);
+begin
+  if FRunMode = rmNone then
+  begin
+    if tbxMonitor.Checked then
+    begin
+      SetRunMode(rmMonitor);
+    end;
+  end else if FRunMode = rmMonitor then
+  begin
+    if not tbxMonitor.Checked then
+    begin
+      SetRunMode(rmNone);
+    end;
+  end;
 end;
 
 procedure TfrmMain.tmrWaitTimer(Sender: TObject);

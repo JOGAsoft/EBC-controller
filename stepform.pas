@@ -13,7 +13,7 @@ const
 //  cSettingsFile = 'Settings.conf';
 
 type
-  TRunMode = (rmNone, rmCharging, rmDischarging, rmDischargingCR, rmWait, rmLoop, rmEnd);
+  TRunMode = (rmNone, rmMonitor, rmCharging, rmDischarging, rmDischargingCR, rmWait, rmLoop, rmEnd);
 
 {
   TBreakPtr = ^TBreak;

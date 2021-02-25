@@ -67,3 +67,8 @@ __recovery/
 
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
+
+# Additional files to ignore
+.ebackup.*
+ebcc.conf
+

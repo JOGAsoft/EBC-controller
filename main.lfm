@@ -12,6 +12,99 @@ object frmMain: TfrmMain
   PopupMenu = mnPopup
   Position = poDefault
   LCLVersion = '2.0.0.4'
+  object Chart: TChart
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = gbSettings
+    Left = 0
+    Height = 430
+    Top = 0
+    Width = 720
+    AxisList = <    
+      item
+        Grid.Color = clGray
+        TickColor = clBlue
+        AxisPen.Color = clBlue
+        Marks.LabelFont.Color = clBlue
+        Marks.Format = '%0:2.2fV'
+        Marks.Frame.Color = clBlue
+        Marks.LabelBrush.Style = bsClear
+        Marks.Range.UseMin = True
+        Marks.Style = smsCustom
+        Minors = <        
+          item
+            Intervals.Count = 1
+            Intervals.MinLength = 5
+            Intervals.Options = [aipUseCount, aipUseMinLength]
+            TickColor = clMaroon
+            Marks.LabelBrush.Style = bsClear
+          end>
+        Range.Max = 10
+        Range.UseMin = True
+        Title.LabelFont.Orientation = 900
+        Title.Caption = '[V]'
+        Title.LabelBrush.Style = bsClear
+        Transformations = ChartAxisTransformationsVoltage
+      end    
+      item
+        Alignment = calBottom
+        Marks.Format = '%2:s'
+        Marks.LabelBrush.Style = bsClear
+        Marks.OverlapPolicy = opHideNeighbour
+        Marks.Source = DateTimeIntervalChartSource
+        Marks.Style = smsLabel
+        Minors = <>
+        Title.Caption = 'Time'
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Alignment = calRight
+        Marks.LabelFont.Color = clRed
+        Marks.Format = '%0:2.2fA'
+        Marks.LabelBrush.Style = bsClear
+        Marks.Style = smsCustom
+        Minors = <>
+        Range.UseMin = True
+        Title.Caption = '[A]'
+        Title.LabelBrush.Style = bsClear
+        Transformations = ChartAxisTransformationsCurrent
+      end>
+    BackColor = clWhite
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Toolset = ChartToolset1
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clWhite
+    object lsCurrent: TLineSeries
+      Title = 'A'
+      AxisIndexX = 1
+      AxisIndexY = 2
+      LinePen.Color = clRed
+      LinePen.Width = 2
+    end
+    object lsVoltage: TLineSeries
+      Title = 'V'
+      AxisIndexX = 1
+      AxisIndexY = 0
+      LinePen.Color = clBlue
+      LinePen.Width = 2
+    end
+    object lsInvisibleCurrent: TLineSeries
+      AxisIndexX = 1
+      AxisIndexY = 2
+      LinePen.Color = clWhite
+    end
+    object lsInvisibleVoltage: TLineSeries
+      AxisIndexX = 1
+      AxisIndexY = 0
+      LinePen.Color = clWhite
+    end
+  end
   object gbConn: TGroupBox
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Side = asrBottom
@@ -146,9 +239,9 @@ object frmMain: TfrmMain
       Height = 280
       Top = 0
       Width = 272
-      ActivePage = tsConsole
+      ActivePage = tsProgram
       Constraints.MaxWidth = 280
-      TabIndex = 3
+      TabIndex = 2
       TabOrder = 4
       object tsCharge: TTabSheet
         Caption = 'Charge'
@@ -169,7 +262,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 115
+          ClientHeight = 132
           ClientWidth = 262
           ItemIndex = 4
           Items.Strings = (
@@ -284,7 +377,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 94
+          ClientHeight = 111
           ClientWidth = 262
           ItemIndex = 0
           Items.Strings = (
@@ -463,16 +556,10 @@ object frmMain: TfrmMain
           Top = 0
           Width = 266
           Anchors = [akTop, akLeft, akRight, akBottom]
-          Font.Height = -8
-          Font.Name = 'Monospace'
+          Font.Height = -9
+          Font.Name = 'Liberation Mono'
           Lines.Strings = (
-            'STEP      CMD     '
-            'NN:NN: C_NIMH 999.999 999.999 99:99:99:99'
-            'NN:NN: C_NIMH 999.999 999.999 99:99:99:99'
-            'NN:NN: C_NIMH 999.999 999.999 99:99:99:99 12.000 16.000'
-            ''
-            '999:999 WAIT 9999'
-            '999:999 C_NIMH 999.999 999.999 99:00:00:00 12.000 16.000'
+            'R:FA7400C83A5D00040000013E0C6C044C06CEF8 CE'
           )
           OnChange = memLogChange
           ParentFont = False
@@ -537,8 +624,9 @@ object frmMain: TfrmMain
       Left = 157
       Height = 49
       Top = 392
-      Width = 115
+      Width = 116
       Caption = '&Monitor'
+      OnChange = tbxMonitorChange
       TabOrder = 7
     end
     object edtTestVal: TJLabeledFloatEdit
@@ -620,99 +708,6 @@ object frmMain: TfrmMain
     Constraints.MaxWidth = 280
     TabOrder = 2
   end
-  object Chart: TChart
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = gbSettings
-    Left = 0
-    Height = 430
-    Top = 0
-    Width = 720
-    AxisList = <    
-      item
-        Grid.Color = clGray
-        TickColor = clBlue
-        AxisPen.Color = clBlue
-        Marks.LabelFont.Color = clBlue
-        Marks.Format = '%0:2.2fV'
-        Marks.Frame.Color = clBlue
-        Marks.LabelBrush.Style = bsClear
-        Marks.Range.UseMin = True
-        Marks.Style = smsCustom
-        Minors = <        
-          item
-            Intervals.Count = 1
-            Intervals.MinLength = 5
-            Intervals.Options = [aipUseCount, aipUseMinLength]
-            TickColor = clMaroon
-            Marks.LabelBrush.Style = bsClear
-          end>
-        Range.Max = 10
-        Range.UseMin = True
-        Title.LabelFont.Orientation = 900
-        Title.Caption = '[V]'
-        Title.LabelBrush.Style = bsClear
-        Transformations = ChartAxisTransformationsVoltage
-      end    
-      item
-        Alignment = calBottom
-        Marks.Format = '%2:s'
-        Marks.LabelBrush.Style = bsClear
-        Marks.OverlapPolicy = opHideNeighbour
-        Marks.Source = DateTimeIntervalChartSource
-        Marks.Style = smsLabel
-        Minors = <>
-        Title.Caption = 'Time'
-        Title.LabelBrush.Style = bsClear
-      end    
-      item
-        Alignment = calRight
-        Marks.LabelFont.Color = clRed
-        Marks.Format = '%0:2.2fA'
-        Marks.LabelBrush.Style = bsClear
-        Marks.Style = smsCustom
-        Minors = <>
-        Range.UseMin = True
-        Title.Caption = '[A]'
-        Title.LabelBrush.Style = bsClear
-        Transformations = ChartAxisTransformationsCurrent
-      end>
-    BackColor = clWhite
-    Foot.Brush.Color = clBtnFace
-    Foot.Font.Color = clBlue
-    Title.Brush.Color = clBtnFace
-    Title.Font.Color = clBlue
-    Title.Text.Strings = (
-      'TAChart'
-    )
-    Toolset = ChartToolset1
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Color = clWhite
-    object lsCurrent: TLineSeries
-      Title = 'A'
-      AxisIndexX = 1
-      AxisIndexY = 2
-      LinePen.Color = clRed
-      LinePen.Width = 2
-    end
-    object lsVoltage: TLineSeries
-      Title = 'V'
-      AxisIndexX = 1
-      AxisIndexY = 0
-      LinePen.Color = clBlue
-      LinePen.Width = 2
-    end
-    object lsInvisibleCurrent: TLineSeries
-      AxisIndexX = 1
-      AxisIndexY = 2
-      LinePen.Color = clWhite
-    end
-    object lsInvisibleVoltage: TLineSeries
-      AxisIndexX = 1
-      AxisIndexY = 0
-      LinePen.Color = clWhite
-    end
-  end
   object memStepLog: TMemo
     AnchorSideLeft.Control = gbConn
     AnchorSideLeft.Side = asrBottom
@@ -740,6 +735,18 @@ object frmMain: TfrmMain
     ParentFont = False
     ScrollBars = ssVertical
     TabOrder = 4
+  end
+  object stRunMode: TStaticText
+    Left = 62
+    Height = 20
+    Top = 12
+    Width = 15
+    Caption = 'O'
+    Color = clWindow
+    Font.Color = clMoneyGreen
+    ParentFont = False
+    ParentColor = False
+    TabOrder = 5
   end
   object Serial: TLazSerial
     Active = False
@@ -841,8 +848,8 @@ object frmMain: TfrmMain
   object sdLogCSV: TSaveDialog
     DefaultExt = '.csv'
     Filter = 'CSV files|*.csv|All files|*.*'
-    left = 248
-    top = 392
+    left = 290
+    top = 367
   end
   object tmrWait: TTimer
     Enabled = False

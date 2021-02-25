@@ -85,6 +85,9 @@
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
+      <Checks>
+        <StackChecks Value="True"/>
+      </Checks>
       <TargetOS Value="linux"/>
     </CodeGeneration>
     <Linking>
