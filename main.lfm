@@ -239,9 +239,9 @@ object frmMain: TfrmMain
       Height = 280
       Top = 0
       Width = 272
-      ActivePage = tsProgram
+      ActivePage = tsDischarge
       Constraints.MaxWidth = 280
-      TabIndex = 2
+      TabIndex = 1
       TabOrder = 4
       object tsCharge: TTabSheet
         Caption = 'Charge'
@@ -262,7 +262,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 115
+          ClientHeight = 132
           ClientWidth = 262
           ItemIndex = 4
           Items.Strings = (
@@ -377,7 +377,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 94
+          ClientHeight = 111
           ClientWidth = 262
           ItemIndex = 0
           Items.Strings = (

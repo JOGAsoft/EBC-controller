@@ -379,7 +379,7 @@ type
     function GetPointer(ARadioGroup: TRadioGroup): Integer;
     function MakePacket2(Packet: Integer; SendMode: TSendMode; TestVal, SecondParam: Extended; ATime: Integer): string;
     function MakeConnPacket(SendMode: TSendMode): string;
-    procedure EBCBreak;
+    procedure EBCBreak(Force: Boolean = False); // Force = True terminates even if a program is running.
     procedure LogStep;
     procedure OffSetting; // Sets labels and button for "off".
     procedure LoadSettings;
@@ -1096,7 +1096,7 @@ begin
   end;
 end;
 
-procedure TfrmMain.EBCBreak;
+procedure TfrmMain.EBCBreak(Force: Boolean);
 begin
   if frmSettings.cgSettings.Checked[cForceMon] then
   begin
@@ -1114,7 +1114,10 @@ begin
   if FInProgram then
   begin
     LogStep;
-    if FWaitCounter = 0 then
+    if Force then
+    begin
+      FInProgram := False;
+    end else if FWaitCounter = 0 then
     begin
       LoadStep;
     end;
@@ -1790,9 +1793,21 @@ begin
           edtTestVal.Value := TestVal;
           lblTestUnit.Caption := u;
           edtCutTime.Value := CutTime;
-          edtCutV.Value := CutVolt;
           edtCutA.Value := CutAmp;
           edtCutM.Value := CutAmpTime;
+          if Mode = rmCharging then
+          begin
+            if Pos(cCmdCCCV, Command) > 0 then
+            begin
+              edtChargeV.Value := CV;
+            end else
+            begin
+              edtCells.Value := Trunc(P2);
+            end;
+          end else if Mode in [rmDischarging, rmDischargingCR] then
+          begin
+            edtCutV.Value := CutVolt;
+          end;
         end;
         if DoSend then
         begin
@@ -1980,8 +1995,8 @@ end;
 
 procedure TfrmMain.btnStopClick(Sender: TObject);
 begin
-  FInProgram := False;
-  EBCBreak;
+  //FInProgram := False;
+  EBCBreak(True);
   OffSetting;
 end;
 

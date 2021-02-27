@@ -10,6 +10,7 @@ uses
 
 const
   cNaN = 10E999;
+  cCmdCCCV = 'C_CCCV';
 //  cSettingsFile = 'Settings.conf';
 
 type
