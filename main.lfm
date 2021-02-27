@@ -239,9 +239,9 @@ object frmMain: TfrmMain
       Height = 280
       Top = 0
       Width = 272
-      ActivePage = tsDischarge
+      ActivePage = tsProgram
       Constraints.MaxWidth = 280
-      TabIndex = 1
+      TabIndex = 2
       TabOrder = 4
       object tsCharge: TTabSheet
         Caption = 'Charge'

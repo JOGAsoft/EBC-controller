@@ -395,6 +395,7 @@ type
     procedure EnumerateSerial;
     procedure RunModeOffOrMonitor;
     procedure SetRunMode(ARunMode: TRunMode);
+    procedure TimerOff;
   public
   end;
 
@@ -1300,6 +1301,15 @@ begin
   end;
 end;
 
+procedure TfrmMain.TimerOff;
+begin
+  lblTimer.Caption := '';
+  tmrWait.Enabled := False;
+  FEndWaitVoltage := FLastU;
+  LogStep;
+  LoadStep;
+end;
+
 function TfrmMain.GetStepNum: string;
 var
   I: Integer;
@@ -1909,7 +1919,16 @@ end;
 
 procedure TfrmMain.btnSkipClick(Sender: TObject);
 begin
-  EBCBreak;
+  if FInProgram then
+  begin
+    if FRunMode = rmWait then
+    begin
+      TimerOff;
+    end else
+    begin
+      EBCBreak;
+    end;
+  end;
 end;
 
 procedure TfrmMain.btnStartClick(Sender: TObject);
@@ -2307,11 +2326,7 @@ begin
     lblTimer.Caption := IntToStr(FWaitCounter);
     if FWaitCounter = 0 then
     begin
-      lblTimer.Caption := '';
-      tmrWait.Enabled := False;
-      FEndWaitVoltage := FLastU;
-      LogStep;
-      LoadStep;
+      TimerOff;
     end;
   end;
 end;
