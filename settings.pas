@@ -65,9 +65,6 @@ end;
 procedure TfrmSettings.FormCreate(Sender: TObject);
 begin
   cgSettings.CheckEnabled[cCaptureSettings] := False;
-  {  cgSettings.Checked[cRememberSaveDir] := True;
-  cgSettings.Checked[cRememberAutoLog] := True;
-  rgStart.ItemIndex := 0;}
 end;
 
 procedure TfrmSettings.FormShow(Sender: TObject);

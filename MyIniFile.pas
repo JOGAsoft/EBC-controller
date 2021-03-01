@@ -75,7 +75,7 @@ begin
   I := 0;
   while ValueExists(Section, RowIdent(Ident, I)) do
   begin
-    AStrings.Add(ReadString(Section, RowIdent(Ident, I), ''));
+    AStrings.Add(ReadString(Section, RowIdent(Ident, I), ADefault));
     Inc(I);
   end;
 end;
@@ -110,7 +110,7 @@ begin
   I := 0;
   while ValueExists(Section, RowIdent(Ident, I)) do
   begin
-    AStrings.Add(ReadHexString(Section, RowIdent(Ident, I), ''));
+    AStrings.Add(ReadHexString(Section, RowIdent(Ident, I), ADefault));
     Inc(I);
   end;
 end;
