@@ -111,8 +111,8 @@ const
 
   // Log table headers
 //  cColumns = ' Step     CMD      (Ah)    (Wh)       Time     StartV  EndV';
-  cColumns = ' Step  |  CMD    | (Ah)  | (Wh)  |    Time    |StartV| EndV';
-  cCol: array [1..7] of Integer = (7, 9, 7, 7, 12, 6, 6);
+  cColumns = ' Step  |  CMD    | (Ah)  | (Wh)  |    Time    |StartV| EndV | EndA';
+  cCol: array [1..8] of Integer = (7, 9, 7, 7, 12, 6, 6, 6);
 
 type
 
@@ -278,6 +278,7 @@ type
     tsCharge: TTabSheet;
     tsDischarge: TTabSheet;
     procedure mniSerialClick(Sender: TObject);
+    procedure pcProgramChange(Sender: TObject);
     procedure SavePNGExecute(Sender: TObject);
     procedure btnAdjustClick(Sender: TObject);
     procedure btnConnectClick(Sender: TObject);
@@ -1353,6 +1354,7 @@ begin
       col[4] := MyFloatStr(FEnergy);//stText[cstEnergy].Caption;
       col[6] := MyFloatStr(FStartU);
       col[7] := MyFloatStr(FLastU);
+      col[8] := MyFloatStr(FLastI);
     end;
     rmWait:
     begin
@@ -1768,9 +1770,9 @@ begin
               begin
                 Dec(Loop);
                 FLastDisCapacity := FCurrentDisCapacity;
+                LogStep;
                 FProgramStep := 0;
                 edtTestVal.Value := 0.0;
-                LogStep;
                 LoadStep;
                 Dec(FProgramStep); // Increments in end of recursive call and this call.
                 memStepLog.Lines.Add('---');
@@ -1905,16 +1907,25 @@ begin
   end;
 end;
 
-procedure TfrmMain.btnProgClick(Sender: TObject);
-{var
-  I: Integer;
-  f: Text;}
+procedure TfrmMain.pcProgramChange(Sender: TObject);
 begin
-{  if frmStep.ShowModal = mrOk then
-  begin
-  end;}
-  frmStep.Show;
+  case pcProgram.TabIndex of
+    0:
+      btnStart.Enabled := rgCharge.ItemIndex > -1;
+    1:
+      btnStart.Enabled := rgDischarge.ItemIndex > -1;
+    2:
+    begin
+      btnStart.Enabled := Length(frmStep.memStep.Text) > 2;
+    end;
+  end;
+end;
+
+procedure TfrmMain.btnProgClick(Sender: TObject);
+begin
+  frmStep.ShowModal;
   stStepFile.Caption := ExtractFileName(frmStep.odOpen.FileName);
+  btnStart.Enabled := Length(frmStep.memStep.Text) > 2;
 end;
 
 procedure TfrmMain.btnSkipClick(Sender: TObject);
@@ -2334,13 +2345,16 @@ end;
 procedure TfrmMain.tsChargeEnter(Sender: TObject);
 begin
   FixLabels(-1);
+  if rgCharge.ItemIndex = -1 then
+  begin
+    btnStart.Enabled := False;
+  end;
 end;
 
 procedure TfrmMain.tsDischargeEnter(Sender: TObject);
 begin
   FixLabels(GetPointer(rgDischarge));
 end;
-
 
 end.
 

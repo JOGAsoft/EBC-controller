@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 478
+  Left = 473
   Height = 520
-  Top = 244
+  Top = 257
   Width = 1000
   Caption = 'EBC controller'
   ClientHeight = 520
@@ -129,7 +129,6 @@ object frmMain: TfrmMain
       Width = 219
       PopupMenu = mnSerial
       TabOrder = 0
-      Text = '/dev/ttyUSB0'
     end
     object Label5: TLabel
       Left = 3
@@ -243,6 +242,7 @@ object frmMain: TfrmMain
       Constraints.MaxWidth = 280
       TabIndex = 2
       TabOrder = 4
+      OnChange = pcProgramChange
       object tsCharge: TTabSheet
         Caption = 'Charge'
         ClientHeight = 243
