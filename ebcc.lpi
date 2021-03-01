@@ -42,7 +42,7 @@
         <PackageName Value="LCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="4">
       <Unit0>
         <Filename Value="ebcc.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -63,16 +63,12 @@
         <UnitName Value="StepForm"/>
       </Unit2>
       <Unit3>
-        <Filename Value="setting.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="settings.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmSettings"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit4>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -86,11 +82,15 @@
     </SearchPaths>
     <CodeGeneration>
       <Checks>
+        <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
       <TargetOS Value="linux"/>
     </CodeGeneration>
     <Linking>
+      <Debugging>
+        <StripSymbols Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
