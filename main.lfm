@@ -238,9 +238,9 @@ object frmMain: TfrmMain
       Height = 280
       Top = 0
       Width = 272
-      ActivePage = tsProgram
+      ActivePage = tsCharge
       Constraints.MaxWidth = 280
-      TabIndex = 2
+      TabIndex = 0
       TabOrder = 4
       OnChange = pcProgramChange
       object tsCharge: TTabSheet
@@ -855,7 +855,7 @@ object frmMain: TfrmMain
     Enabled = False
     OnTimer = tmrWaitTimer
     left = 892
-    top = 228
+    top = 232
   end
   object alList: TActionList
     left = 168

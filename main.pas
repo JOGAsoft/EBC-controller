@@ -1100,6 +1100,7 @@ end;
 
 procedure TfrmMain.EBCBreak(Force: Boolean);
 begin
+  btnSkip.Enabled := False;
   if frmSettings.cgSettings.Checked[cForceMon] then
   begin
     tbxMonitor.Checked := True;
@@ -1778,6 +1779,9 @@ begin
                 memStepLog.Lines.Add('---');
               end else
               begin
+                lblCapI.Enabled := False;
+                lblCapI.Caption := cCapI;
+                shaCapI.Brush.Color := clDefault;
                 tmrWait.Enabled := True; // Triggers next step if loop is finished
               end;
             end else
@@ -1835,6 +1839,7 @@ begin
       end;
     end;
     Inc(FProgramStep);
+    btnSkip.Enabled := True;
   end else
   begin
     FInProgram := False;
@@ -1930,11 +1935,13 @@ end;
 
 procedure TfrmMain.btnSkipClick(Sender: TObject);
 begin
+  btnSkip.Enabled := False;
   if FInProgram then
   begin
     if FRunMode = rmWait then
     begin
-      TimerOff;
+      FWaitCounter := 1;
+//      TimerOff;
     end else
     begin
       EBCBreak;
@@ -2275,6 +2282,7 @@ begin
   I := GetPointer(rgCharge);
   if I >-1 then if FPackets[I].Method = mChargeCV then
   begin
+    btnStart.Enabled := True;
     edtChargeV.Enabled := True;
     edtCells.Enabled := False;
     edtChargeV.Value := FPackets[I].VoltInfo;
@@ -2294,6 +2302,7 @@ begin
   FixLabels(I);
   if (I > -1) {and (I <> FPacketIndex)} then
   begin
+    btnStart.Enabled := True;
     case FPackets[I].TestVal of
       tvCurrent:
       begin
