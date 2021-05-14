@@ -618,7 +618,7 @@ begin
     P := FLastU * FLastI;
     stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 1) + 'W';
     stText[cstCapacity].Caption := GetCharge(FCurrentCapacity[caEBC]);
-    stText[cstCapLocal].Caption := GetCharge(FCurrentCapacity[caLocal]) + '(PC);
+    stText[cstCapLocal].Caption := GetCharge(FCurrentCapacity[caLocal]) + '(PC)';
     tmp := (P * dT) / 3600000;
     if ValOk(tmp) then
     begin
