@@ -616,7 +616,7 @@ begin
     stText[cstVoltage].Caption := MyFloatStr(FLastU) + 'V';
     stText[cstCurrent].Caption := MyFloatStr(FLastI) + 'A';
     P := FLastU * FLastI;
-    stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 1) + 'W';
+    stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 3) + 'W';
     stText[cstCapacity].Caption := GetCharge(FCurrentCapacity[caEBC]);
     stText[cstCapLocal].Caption := GetCharge(FCurrentCapacity[caLocal]) + '(PC)';
     tmp := (P * dT) / 3600000;
@@ -861,6 +861,9 @@ begin
   WriteLn(f, ATime, ',', #9, MyFloatStr(ACurrent), ',', #9, MyFloatStr(AVoltage));
 end;
 
+{
+  Temporary code to debug capacity measurement > 10 Ah
+}
 procedure TfrmMain.Button1Click(Sender: TObject);
 var
   I: Integer;
