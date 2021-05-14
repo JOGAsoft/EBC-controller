@@ -2266,10 +2266,10 @@ begin
   rgDischarge.OnClick := @rgDischargeClick;
   btnStart.Enabled := False;
   memStepLog.Lines.Clear;
-//  memStepLog.Lines.Add(cVersion);
-  memStepLog.Lines.Add('041 155');
-  memStepLog.Lines.Add('140 168');
-  memStepLog.Lines.Add('144 109');
+  memStepLog.Lines.Add(cVersion);
+//  memStepLog.Lines.Add('041 155');
+//  memStepLog.Lines.Add('140 168');
+//  memStepLog.Lines.Add('144 109');
 
 end;
 

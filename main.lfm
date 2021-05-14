@@ -756,6 +756,7 @@ object frmMain: TfrmMain
     Caption = 'Button1'
     OnClick = Button1Click
     TabOrder = 6
+    Visible = False
   end
   object Serial: TLazSerial
     Active = False
