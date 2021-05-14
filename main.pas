@@ -19,6 +19,7 @@ const
   cstPower = 1;
   cstTime = 3;
   cstCapacity = 4;
+  cstCapLocal = 5;  // Capacity computed on host
   cstEnergy = 6;
   cstResistance = 8;
   cstdV = 10;
@@ -115,7 +116,7 @@ const
   cCol: array [1..8] of Integer = (7, 9, 7, 7, 12, 6, 6, 6);
 
 type
-
+  TCapacity = (caEBC, caLocal);
   TSendMode = (smStart, smAdjust, smCont, smConnect, smDisconnect, smConnStop);
   TMethod = (mNone, mCharge, mChargeCV, mDischarge);
   TTestVal = (tvCurrent, tvPower, tvResistance);
@@ -197,6 +198,7 @@ type
     btnStart: TButton;
     btnStop: TButton;
     btnSkip: TButton;
+    Button1: TButton;
     Chart: TChart;
     ChartToolset1: TChartToolset;
     ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool;
@@ -277,6 +279,7 @@ type
     tbxMonitor: TToggleBox;
     tsCharge: TTabSheet;
     tsDischarge: TTabSheet;
+    procedure Button1Click(Sender: TObject);
     procedure mniSerialClick(Sender: TObject);
     procedure pcProgramChange(Sender: TObject);
     procedure SavePNGExecute(Sender: TObject);
@@ -336,7 +339,7 @@ type
     FInProgram: Boolean;
     FEnergy: Extended;
     FStartU: Extended;
-    FCurrentCapacity: Extended;     // The capacity (Ah) measured so far from the current cycle
+    FCurrentCapacity: array [TCapacity] of Extended;     // The capacity (Ah) measured so far from the current cycle
     FLastDisCapacity: Extended;     // Last capacity from the latest discharge cycle
     FCurrentDisCapacity: Extended;  // The capacity measured from the current discharge cycle
     FBeginWaitVoltage: Extended;
@@ -353,6 +356,8 @@ type
     FDelta: array [0..1] of TDeltaValue;
     FDeltaIndex: Integer;
     FIntTime: Integer;
+    procedure DoHexLog(AText: string);
+    function NewDecodeCharge(Data: string): Extended;
     procedure SerialRec(Sender: TObject);
     procedure InterpretPackage(APacket: string; ANow: TDateTime);
     procedure DumpChkSum(lbl: string; snd: string; Pos: Integer);
@@ -604,13 +609,16 @@ begin
     FLastI := DecodeCurrent(Copy(APacket, 3, 2));
     FLastU := DecodeVoltage(Copy(APacket, 5, 2));
 
-    FCurrentCapacity := DecodeCharge(Copy(APacket, 7, 2));
+    FCurrentCapacity[caEBC] := DecodeCharge(Copy(APacket, 7, 2));
+    FCurrentCapacity[caLocal] := FCurrentCapacity[caLocal] + FLastI * dT / 3600000;
+//    DumpChkSum(FloatToStr(FCurrentCapacity[caEBC]), APacket, crcrecvpos);
 
     stText[cstVoltage].Caption := MyFloatStr(FLastU) + 'V';
     stText[cstCurrent].Caption := MyFloatStr(FLastI) + 'A';
     P := FLastU * FLastI;
     stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 1) + 'W';
-    stText[cstCapacity].Caption := GetCharge(FCurrentCapacity);
+    stText[cstCapacity].Caption := GetCharge(FCurrentCapacity[caEBC]);
+    stText[cstCapLocal].Caption := GetCharge(FCurrentCapacity[caLocal]) + '(PC);
     tmp := (P * dT) / 3600000;
     if ValOk(tmp) then
     begin
@@ -692,7 +700,7 @@ begin
       FDelta[FDeltaIndex].Time := ANow;
     end;
 
-    DumpChkSum('R:', APacket, crcrecvpos);
+//    DumpChkSum('R:', APacket, crcrecvpos);
 
     Inc(FSampleCounter);
 
@@ -730,7 +738,7 @@ begin
           end;
         end;
       end;
-      if FCurrentCapacity > FChecks.cCapacity then
+      if FCurrentCapacity[caEBC] > FChecks.cCapacity then
       begin
         EBCBreak;
       end;
@@ -752,7 +760,7 @@ begin
     s := s + LowerCase(IntToHex(Ord(snd[I]),2));
 //    if I < Length(snd) then s := s + '|';
   end;
-  DoLog(lbl + ' ' + s + ' ' + IntToHex(Ord(checksum(snd, Pos)),2));
+  DoHexLog(lbl + ' ' + s + ' ' + IntToHex(Ord(checksum(snd, Pos)),2));
 end;
 
 procedure TfrmMain.SendData(snd: string);
@@ -828,6 +836,20 @@ begin
   Result := (Ord(Data[1])*2400 + 10*Ord(Data[2])) / 10000;
 end;
 
+function TfrmMain.NewDecodeCharge(Data: string): Extended;
+var
+  s: string;
+begin
+  s := Data;
+  if s[1] > #$8b then
+  begin
+    Result := 10 + (((Ord(s[1]) - $8b) + 00)*2400 + 10*Ord(s[2])) / 10000;
+  end else
+  begin
+    Result := (Ord(s[1])*2400 + 10*Ord(s[2])) / 10000;
+  end;
+end;
+
 function TfrmMain.DecodeTimer(Data: string): Integer;
 begin
   Result := Ord(Data[1])*240 + Ord(Data[2]);
@@ -838,6 +860,27 @@ procedure TfrmMain.SaveCSVLine(var f: Text; ATime: Integer; ACurrent: Extended;
 begin
   WriteLn(f, ATime, ',', #9, MyFloatStr(ACurrent), ',', #9, MyFloatStr(AVoltage));
 end;
+
+procedure TfrmMain.Button1Click(Sender: TObject);
+var
+  I: Integer;
+  Data: string;
+  f1, f2: Extended;
+begin
+  SetLength(Data, 2);
+  for I := 0 to 2 do
+  begin
+    Data[1] := Chr(StrToInt(Copy(memStepLog.Lines.Strings[I], 1, 3)));
+    Data[2] := Chr(StrToInt(Copy(memStepLog.Lines.Strings[I], 5, 3)));
+//    memStepLog.Lines.Add(IntToHex(Ord(Data[1]), 2) + '  ' + IntToHex(Ord(Data[2]), 2));
+    f1 := DecodeCharge(Data);
+    f2 := NewDecodeCharge(Data);
+    memStepLog.Lines.Add('AsChrg: ' + FloatToStrF(f1, ffFixed, 18, 16) + ' AsNewChrg:' +
+       FloatToStrF(f2, ffFixed, 18, 16));
+  end;
+  //memStepLog.Lines.Add(FloatToStr((41*2400 + 10*255) / 10000));
+end;
+
 
 procedure TfrmMain.SaveCSV(AFile: string);
 var
@@ -1155,7 +1198,7 @@ begin
       cstCapacity:
       begin
         FShowCoulomb := not FShowCoulomb;
-        stText[cstCapacity].Caption := GetCharge(FCurrentCapacity);
+        stText[cstCapacity].Caption := GetCharge(FCurrentCapacity[caEBC]);
       end;
     end;
   end;
@@ -1351,7 +1394,7 @@ begin
     rmNone:;
     rmCharging, rmDischarging, rmDischargingCR:
     begin
-      col[3] := MyFloatStr(FCurrentCapacity);
+      col[3] := MyFloatStr(FCurrentCapacity[caEBC]);
       col[4] := MyFloatStr(FEnergy);//stText[cstEnergy].Caption;
       col[6] := MyFloatStr(FStartU);
       col[7] := MyFloatStr(FLastU);
@@ -1625,6 +1668,19 @@ begin
 //  SendMessage(memLog.Handle, WM_VSCROLL, SB_BOTTOM, 0);
 end;
 
+
+procedure TfrmMain.DoHexLog(AText: string);
+begin
+  if memStepLog.Lines.Count > 10000 then
+  begin
+    memStepLog.Lines.Delete(0);
+  end;
+  memStepLog.Lines.Add(AText);
+
+  memStepLog.VertScrollBar.Position := 1000000;
+//  SendMessage(memLog.Handle, WM_VSCROLL, SB_BOTTOM, 0);
+end;
+
 procedure TfrmMain.StartLogging;
 begin
   if mniDoLog.Checked then
@@ -1688,10 +1744,11 @@ begin
     DoUpdate := True;
     if FSteps[FCurrentStep].Mode in [rmDischarging, rmDischargingCR] then
     begin
-      FCurrentDisCapacity := FCurrentCapacity;
+      FCurrentDisCapacity := FCurrentCapacity[caEBC];
     end;
     FCurrentStep := FProgramStep;
     FEnergy := 0;
+    FCurrentCapacity[caLocal] := 0;
     FWaitCounter := 0;
     FStepTime := Now;
     with FSteps[FProgramStep] do
@@ -1912,6 +1969,7 @@ begin
   end;
 end;
 
+
 procedure TfrmMain.pcProgramChange(Sender: TObject);
 begin
   case pcProgram.TabIndex of
@@ -2009,8 +2067,9 @@ begin
     StartLogging;
     FSampleCounter := 0;
     FDeltaIndex := 0;
-    FCurrentCapacity := 0;
     FLastDisCapacity := -1;
+    FCurrentCapacity[caLocal] := 0;
+    FCurrentCapacity[caEBC] := 0;
     FCurrentDisCapacity := 0;
     FEnergy := 0;
     mniDoLog.Enabled := False;
@@ -2207,7 +2266,11 @@ begin
   rgDischarge.OnClick := @rgDischargeClick;
   btnStart.Enabled := False;
   memStepLog.Lines.Clear;
-  memStepLog.Lines.Add(cVersion);
+//  memStepLog.Lines.Add(cVersion);
+  memStepLog.Lines.Add('041 155');
+  memStepLog.Lines.Add('140 168');
+  memStepLog.Lines.Add('144 109');
+
 end;
 
 procedure TfrmMain.FormShow(Sender: TObject);

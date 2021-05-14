@@ -377,7 +377,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 111
+          ClientHeight = 94
           ClientWidth = 262
           ItemIndex = 0
           Items.Strings = (
@@ -747,6 +747,15 @@ object frmMain: TfrmMain
     ParentFont = False
     ParentColor = False
     TabOrder = 5
+  end
+  object Button1: TButton
+    Left = 663
+    Height = 25
+    Top = 490
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 6
   end
   object Serial: TLazSerial
     Active = False
