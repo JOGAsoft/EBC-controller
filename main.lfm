@@ -11,7 +11,7 @@ object frmMain: TfrmMain
   OnShow = FormShow
   PopupMenu = mnPopup
   Position = poDefault
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '2.2.0.4'
   object Chart: TChart
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -134,23 +134,21 @@ object frmMain: TfrmMain
       Left = 3
       Height = 19
       Top = 0
-      Width = 45
+      Width = 41
       Caption = 'Device'
-      ParentColor = False
     end
     object lblModel: TLabel
       Left = 93
       Height = 19
       Top = 49
-      Width = 94
+      Width = 92
       Caption = 'Not connected'
-      ParentColor = False
     end
     object chkAccept: TCheckBox
       Left = 119
       Height = 23
       Top = -4
-      Width = 98
+      Width = 96
       Caption = 'Ignore CRC'
       Checked = True
       State = cbChecked
@@ -238,9 +236,9 @@ object frmMain: TfrmMain
       Height = 280
       Top = 0
       Width = 272
-      ActivePage = tsCharge
+      ActivePage = tsConsole
       Constraints.MaxWidth = 280
-      TabIndex = 0
+      TabIndex = 3
       TabOrder = 4
       OnChange = pcProgramChange
       object tsCharge: TTabSheet
@@ -262,7 +260,7 @@ object frmMain: TfrmMain
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 132
+          ClientHeight = 115
           ClientWidth = 262
           ItemIndex = 4
           Items.Strings = (
@@ -280,17 +278,15 @@ object frmMain: TfrmMain
           Left = 216
           Height = 19
           Top = 216
-          Width = 48
+          Width = 45
           Caption = 'minues'
-          ParentColor = False
         end
         object Label10: TLabel
           Left = 126
           Height = 19
           Top = 216
-          Width = 32
+          Width = 29
           Caption = 'after'
-          ParentColor = False
         end
         object edtCells: TJLabeledIntegerEdit
           Left = 8
@@ -303,7 +299,6 @@ object frmMain: TfrmMain
           EditLabel.Height = 19
           EditLabel.Width = 116
           EditLabel.Caption = 'Cells'
-          EditLabel.ParentColor = False
           TabOrder = 1
           OnChange = edtCellsChange
           OnClick = edtCellsClick
@@ -319,12 +314,10 @@ object frmMain: TfrmMain
           Width = 116
           DisplayFormat = '#,0.00'
           Decimals = 2
-          Value = 0
           NegativeColor = clDefault
           EditLabel.Height = 19
           EditLabel.Width = 116
           EditLabel.Caption = 'Cutoff current (A)'
-          EditLabel.ParentColor = False
           TabOrder = 2
         end
         object edtCutM: TJLabeledIntegerEdit
@@ -338,7 +331,6 @@ object frmMain: TfrmMain
           EditLabel.Height = 19
           EditLabel.Width = 56
           EditLabel.Caption = ' '
-          EditLabel.ParentColor = False
           TabOrder = 3
         end
         object edtChargeV: TJLabeledFloatEdit
@@ -348,12 +340,10 @@ object frmMain: TfrmMain
           Width = 114
           DisplayFormat = '#,0.00'
           Decimals = 2
-          Value = 0
           NegativeColor = clDefault
           EditLabel.Height = 19
           EditLabel.Width = 114
           EditLabel.Caption = 'Voltage'
-          EditLabel.ParentColor = False
           Enabled = False
           TabOrder = 4
         end
@@ -397,7 +387,6 @@ object frmMain: TfrmMain
           Font.Height = -16
           Font.Name = 'Sans'
           Font.Style = [fsBold]
-          ParentColor = False
           ParentFont = False
         end
         object edtCutV: TJLabeledFloatEdit
@@ -407,12 +396,10 @@ object frmMain: TfrmMain
           Width = 114
           DisplayFormat = '#,0.00'
           Decimals = 2
-          Value = 0
           NegativeColor = clDefault
           EditLabel.Height = 19
           EditLabel.Width = 114
           EditLabel.Caption = 'Cutoff Voltage'
-          EditLabel.ParentColor = False
           TabOrder = 1
         end
       end
@@ -424,9 +411,8 @@ object frmMain: TfrmMain
           Left = 8
           Height = 19
           Top = 1
-          Width = 86
+          Width = 81
           Caption = 'Current step:'
-          ParentColor = False
         end
         object btnProg: TButton
           Left = 185
@@ -441,10 +427,9 @@ object frmMain: TfrmMain
           Left = 121
           Height = 19
           Top = 1
-          Width = 49
+          Width = 46
           Caption = 'Testing'
           Color = clYellow
-          ParentColor = False
           Transparent = False
         end
         object lblStepNum: TLabel
@@ -453,7 +438,6 @@ object frmMain: TfrmMain
           Top = 1
           Width = 9
           Caption = '0'
-          ParentColor = False
         end
         object lblProgTime: TLabel
           Left = 137
@@ -461,7 +445,6 @@ object frmMain: TfrmMain
           Top = 71
           Width = 62
           Caption = '00:00:00'
-          ParentColor = False
         end
         object shaCapI: TShape
           Left = 12
@@ -476,10 +459,9 @@ object frmMain: TfrmMain
           Left = 30
           Height = 19
           Top = 100
-          Width = 64
+          Width = 61
           Caption = 'CapI/EneI'
           Enabled = False
-          ParentColor = False
         end
         object btnSkip: TButton
           Left = 104
@@ -497,7 +479,6 @@ object frmMain: TfrmMain
           Top = 223
           Width = 9
           Caption = '0'
-          ParentColor = False
         end
         object edtDelim: TEdit
           Left = 12
@@ -512,9 +493,8 @@ object frmMain: TfrmMain
           Left = 12
           Height = 19
           Top = 44
-          Width = 91
+          Width = 84
           Caption = 'Log separator'
-          ParentColor = False
         end
         object stStepFile: TStaticText
           Left = 7
@@ -528,9 +508,8 @@ object frmMain: TfrmMain
           Left = 9
           Height = 19
           Top = 172
-          Width = 25
+          Width = 22
           Caption = 'File'
-          ParentColor = False
         end
       end
       object tsConsole: TTabSheet
@@ -575,7 +554,6 @@ object frmMain: TfrmMain
       Width = 23
       Caption = 'Wh'
       Enabled = False
-      ParentColor = False
     end
     object chkCutCap: TCheckBox
       Left = 244
@@ -606,7 +584,6 @@ object frmMain: TfrmMain
       Width = 18
       Caption = 'Ah'
       Enabled = False
-      ParentColor = False
     end
     object lblTestUnit: TLabel
       Left = 104
@@ -617,7 +594,6 @@ object frmMain: TfrmMain
       Font.Height = -16
       Font.Name = 'Sans'
       Font.Style = [fsBold]
-      ParentColor = False
       ParentFont = False
     end
     object tbxMonitor: TToggleBox
@@ -636,12 +612,10 @@ object frmMain: TfrmMain
       Width = 90
       DisplayFormat = '#,0.00'
       Decimals = 2
-      Value = 0
       NegativeColor = clDefault
       EditLabel.Height = 19
       EditLabel.Width = 90
       EditLabel.Caption = 'TestVal'
-      EditLabel.ParentColor = False
       TabOrder = 8
     end
     object edtCutCap: TJLabeledFloatEdit
@@ -651,12 +625,10 @@ object frmMain: TfrmMain
       Width = 98
       DisplayFormat = '#,0.00'
       Decimals = 2
-      Value = 0
       NegativeColor = clDefault
       EditLabel.Height = 19
       EditLabel.Width = 98
       EditLabel.Caption = 'Cutoff capacity(Ah)'
-      EditLabel.ParentColor = False
       Enabled = False
       TabOrder = 9
     end
@@ -671,7 +643,6 @@ object frmMain: TfrmMain
       EditLabel.Height = 19
       EditLabel.Width = 98
       EditLabel.Caption = 'Max time (min)'
-      EditLabel.ParentColor = False
       TabOrder = 10
       OnChange = edtCutTimeChange
     end
@@ -682,12 +653,10 @@ object frmMain: TfrmMain
       Width = 90
       DisplayFormat = '#,0.00'
       Decimals = 2
-      Value = 0
       NegativeColor = clDefault
       EditLabel.Height = 19
       EditLabel.Width = 90
       EditLabel.Caption = 'Cutoff energy'
-      EditLabel.ParentColor = False
       Enabled = False
       TabOrder = 11
     end
@@ -767,36 +736,36 @@ object frmMain: TfrmMain
     StopBits = sbOne
     Device = '/dev/ttyUSB0'
     RcvLineCRLF = False
-    left = 1240
-    top = 720
+    Left = 1240
+    Top = 720
   end
   object DateTimeIntervalChartSource: TDateTimeIntervalChartSource
     DateTimeFormat = 'HH:MM:SS'
     Steps = [dtsHour, dtsMinute, dtsSecond]
-    left = 440
-    top = 80
+    Left = 440
+    Top = 80
   end
   object ChartAxisTransformationsCurrent: TChartAxisTransformations
-    left = 416
-    top = 200
+    Left = 416
+    Top = 200
     object ChartAxisTransformationsCurrentAutoScaleAxisTransform: TAutoScaleAxisTransform
     end
   end
   object ChartAxisTransformationsVoltage: TChartAxisTransformations
-    left = 416
-    top = 280
+    Left = 416
+    Top = 280
     object ChartAxisTransformationsVoltageAutoScaleAxisTransform: TAutoScaleAxisTransform
     end
   end
   object ChartToolset1: TChartToolset
-    left = 312
-    top = 80
+    Left = 312
+    Top = 80
     object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
     end
   end
   object mnPopup: TPopupMenu
-    left = 192
-    top = 263
+    Left = 192
+    Top = 263
     object mniSavePNG: TMenuItem
       Caption = 'Save to &PNG...'
       ShortCut = 113
@@ -846,30 +815,30 @@ object frmMain: TfrmMain
   object sdCSV: TSaveDialog
     DefaultExt = '.csv'
     Filter = 'CSV files|*.csv|All files|*.*'
-    left = 168
-    top = 392
+    Left = 168
+    Top = 392
   end
   object sdPNG: TSaveDialog
     DefaultExt = '.png'
     Filter = 'PNG files|*.png|All files|*.*'
-    left = 152
-    top = 208
+    Left = 152
+    Top = 208
   end
   object sdLogCSV: TSaveDialog
     DefaultExt = '.csv'
     Filter = 'CSV files|*.csv|All files|*.*'
-    left = 290
-    top = 367
+    Left = 290
+    Top = 367
   end
   object tmrWait: TTimer
     Enabled = False
     OnTimer = tmrWaitTimer
-    left = 892
-    top = 232
+    Left = 892
+    Top = 232
   end
   object alList: TActionList
-    left = 168
-    top = 113
+    Left = 168
+    Top = 113
     object acSavePNG: TAction
       Caption = 'Save'
       OnExecute = mniSavePNGClick
@@ -896,7 +865,7 @@ object frmMain: TfrmMain
     end
   end
   object mnSerial: TPopupMenu
-    left = 175
-    top = 459
+    Left = 175
+    Top = 459
   end
 end

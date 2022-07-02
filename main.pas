@@ -617,7 +617,13 @@ begin
     stText[cstCurrent].Caption := MyFloatStr(FLastI) + 'A';
     P := FLastU * FLastI;
     stText[cstPower].Caption := FloatToStrF(P, ffFixed, 18, 3) + 'W';
-    stText[cstCapacity].Caption := GetCharge(FCurrentCapacity[caEBC]);
+    if FCurrentCapacity[caEBC] < 10 then
+    begin
+      stText[cstCapacity].Caption := GetCharge(FCurrentCapacity[caEBC]);
+    end else
+    begin
+      stText[cstCapacity].Caption := 'See device';
+    end;
     stText[cstCapLocal].Caption := GetCharge(FCurrentCapacity[caLocal]) + '(PC)';
     tmp := (P * dT) / 3600000;
     if ValOk(tmp) then
@@ -870,10 +876,11 @@ var
   Data: string;
   f1, f2: Extended;
 begin
-  SetLength(Data, 2);
+//  SetLength(Data, 2);
+  Data := '  ';
   for I := 0 to 2 do
   begin
-    Data[1] := Chr(StrToInt(Copy(memStepLog.Lines.Strings[I], 1, 3)));
+    Data[1]:= Chr(StrToInt(Copy(memStepLog.Lines.Strings[I], 1, 3)));
     Data[2] := Chr(StrToInt(Copy(memStepLog.Lines.Strings[I], 5, 3)));
 //    memStepLog.Lines.Add(IntToHex(Ord(Data[1]), 2) + '  ' + IntToHex(Ord(Data[2]), 2));
     f1 := DecodeCharge(Data);
@@ -1018,6 +1025,10 @@ begin
     end;
     Inc(I);
   until N > 10;
+  SetLength(FModels, Length(FModels) + 1);
+  FModels[High(FModels)] := FModels[0];
+  FModels[High(FModels)].Name := 'Unknown';
+
   FConn.Connect := GetHexPacketFromIni(ini, cConn, cConnect);
   FConn.Disconnect := GetHexPacketFromIni(ini, cConn, cDisconnect);
   FConn.Stop := GetHexPacketFromIni(ini, cConn, cStop);
@@ -1178,7 +1189,7 @@ var
   I: Integer;
 begin
   Result := -1;
-  for I := Low(FModels) to High(FModels) do
+  for I := Low(FModels) to High(FModels) - 1 do
   begin
     if AModel = FModels[I].Ident then
     begin
@@ -1186,6 +1197,8 @@ begin
       Break;
     end;
   end;
+  FModels[High(FModels)].Name := IntToHex(AModel, 2) + ' unknown';
+  Result := High(FModels);
 end;
 
 procedure TfrmMain.stTextClick(Sender: TObject);
@@ -1433,7 +1446,7 @@ begin
   tsDisCharge.Enabled := True;
   btnStop.Enabled := False;
   btnStart.Enabled := True;
-  btnAdjust.Enabled := True;
+  btnAdjust.Enabled := False;
   tbxMonitor.Enabled := True;
   FInProgram := False;
   frmStep.memStep.Enabled := True;
@@ -1678,7 +1691,7 @@ begin
   begin
     memStepLog.Lines.Delete(0);
   end;
-  memStepLog.Lines.Add(AText);
+  memLog.Lines.Add(AText);
 
   memStepLog.VertScrollBar.Position := 1000000;
 //  SendMessage(memLog.Handle, WM_VSCROLL, SB_BOTTOM, 0);
@@ -2040,7 +2053,7 @@ begin
     frmStep.memStep.Enabled := False;
     btnProg.Caption := cView;
     btnStart.Enabled := False;
-    btnAdjust.Enabled := False;
+    btnAdjust.Enabled := True;
     btnCont.Enabled := False;
     btnStop.Enabled := True;
     FProgramStep := 0;
