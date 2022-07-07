@@ -1197,8 +1197,11 @@ begin
       Break;
     end;
   end;
-  FModels[High(FModels)].Name := IntToHex(AModel, 2) + ' unknown';
-  Result := High(FModels);
+  if Result = -1 then
+  begin
+    FModels[High(FModels)].Name := IntToHex(AModel, 2) + ' unknown';
+    Result := High(FModels);
+  end;
 end;
 
 procedure TfrmMain.stTextClick(Sender: TObject);
